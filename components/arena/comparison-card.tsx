@@ -1,13 +1,23 @@
-import type { DeepPartial } from 'ai';
+'use client';
 
+import type { DeepPartial } from 'ai';
+import { SlidersHorizontal } from 'lucide-react';
+import { useId, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCardWeights } from '@/hooks/use-card-weights';
 import type { Comparison } from '@/lib/ai/schemas';
 import { type ReadyCriterion, isCriterionReady, presentItems } from '@/lib/comparison-view';
 import { type Leader, type Scores, computeScores, pickLeader } from '@/lib/scoring';
 
 import { CriterionBar } from './criterion-bar';
 import { OptionCard } from './option-card';
+import { type ScoreEntry, ScoreSummary } from './score-summary';
 import { Reveal } from './reveal';
+import { WeightSliders } from './weight-sliders';
+
+export const ADJUST_WEIGHTS_LABEL = 'Adjust weights';
 
 export const CONFIDENCE_LABEL = {
   low: 'Low confidence',
@@ -119,11 +129,59 @@ const IrrelevantNotice = ({ input, isStreaming }: ComparisonCardProps) => {
   );
 };
 
-/** Scores and the leader appear once streaming ends, weighted by the model defaults. */
+interface WeightsPanelProps {
+  ready: readonly ReadyCriterion[];
+  weights: ReturnType<typeof useCardWeights>;
+  entries: readonly ScoreEntry[];
+  leader: Leader;
+}
+
+/** Collapsed by default so the verdict stays the focus; opening it never calls the model. */
+const WeightsPanel = ({ ready, weights, entries, leader }: WeightsPanelProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const panelId = `${useId()}-weights`;
+  return (
+    <div className="flex flex-col gap-3">
+      <Button
+        variant="outline"
+        size="sm"
+        className="self-start"
+        aria-expanded={isOpen}
+        aria-controls={panelId}
+        onClick={() => setIsOpen((open) => !open)}
+      >
+        <SlidersHorizontal aria-hidden />
+        {ADJUST_WEIGHTS_LABEL}
+      </Button>
+      {isOpen && (
+        <WeightSliders
+          id={panelId}
+          header={<ScoreSummary entries={entries} leader={leader} />}
+          labels={ready.map((criterion) => criterion.label)}
+          weights={weights.weights}
+          canReset={weights.isAdjusted}
+          onChange={weights.setWeight}
+          onReset={weights.reset}
+        />
+      )}
+    </div>
+  );
+};
+
+const scoreEntries = (input: DeepPartial<Comparison> | undefined, scores: Scores): ScoreEntry[] =>
+  (['a', 'b'] as const).map((side, index) => ({
+    side,
+    name: input?.options?.[index]?.name ?? `Option ${side.toUpperCase()}`,
+    emoji: input?.options?.[index]?.emoji ?? '',
+    score: scores[side],
+  }));
+
+/** Scores and the leader appear once streaming ends, then follow the weight sliders live. */
 const Battle = ({ input, isStreaming }: ComparisonCardProps) => {
   const ready = presentItems(input?.criteria).filter(isCriterionReady);
-  const weights = ready.map((criterion) => criterion.defaultWeight);
-  const scores = isStreaming || ready.length === 0 ? undefined : computeScores(ready, weights);
+  const weights = useCardWeights(ready);
+  const scores =
+    isStreaming || ready.length === 0 ? undefined : computeScores(ready, weights.weights);
   const leader = scores ? pickLeader(scores) : null;
 
   return (
@@ -132,6 +190,14 @@ const Battle = ({ input, isStreaming }: ComparisonCardProps) => {
       <OptionsGrid input={input} isStreaming={isStreaming} scores={scores} leader={leader} />
       <Criteria input={input} isStreaming={isStreaming} ready={ready} />
       <Verdict verdict={input?.verdict} />
+      {scores && (
+        <WeightsPanel
+          ready={ready}
+          weights={weights}
+          entries={scoreEntries(input, scores)}
+          leader={leader}
+        />
+      )}
     </>
   );
 };
