@@ -49,6 +49,7 @@ describe('chatErrorMessage', () => {
     ['a 500 response', apiError(500)],
     ['a stream error', new Error(faker.lorem.sentence())],
     ['a non-error value', faker.lorem.word()],
+    ['a failed tool call without a chat error', undefined],
   ])('falls back to generic copy for %s', (_name, error) => {
     // Act
     const message = chatErrorMessage(error);

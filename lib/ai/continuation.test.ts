@@ -4,7 +4,11 @@ import { describe, expect, it } from 'vitest';
 import { makeComparison } from '@/test/factories';
 import { makeComparisonMessage, makeUserMessage } from '@/test/messages';
 
-import { shouldContinueAfterClarification } from './continuation';
+import {
+  dropFailedToolParts,
+  hasFailedTool,
+  shouldContinueAfterClarification,
+} from './continuation';
 import type { ArenaUIMessage } from './messages';
 
 type Part = ArenaUIMessage['parts'][number];
@@ -72,5 +76,74 @@ describe('shouldContinueAfterClarification', () => {
 
     // Assert
     expect(shouldSend).toBe(false);
+  });
+});
+
+const failedComparison = (): Part => ({
+  type: 'tool-renderComparison',
+  toolCallId: faker.string.uuid(),
+  state: 'output-error',
+  input: undefined,
+  errorText: faker.lorem.sentence(),
+});
+
+describe('hasFailedTool', () => {
+  it.each<[string, ArenaUIMessage[], boolean]>([
+    ['a failed comparison', [makeUserMessage(), assistant(failedComparison())], true],
+    [
+      'a failure after the answered clarification',
+      [makeUserMessage(), assistant(answeredClarification(), failedComparison())],
+      true,
+    ],
+    ['a finished comparison', [makeUserMessage(), assistant(comparisonPart())], false],
+    ['a user message last', [makeUserMessage()], false],
+    ['an empty history', [], false],
+  ])('%s → %s', (_name, messages, expected) => {
+    // Act
+    const failed = hasFailedTool(messages);
+
+    // Assert
+    expect(failed).toBe(expected);
+  });
+});
+
+describe('dropFailedToolParts', () => {
+  it('keeps the answered clarification so the retry resumes after it', () => {
+    // Arrange
+    const clarification = answeredClarification();
+    const messages = [
+      makeUserMessage(),
+      assistant(clarification, { type: 'step-start' }, failedComparison()),
+    ];
+
+    // Act
+    const trimmed = dropFailedToolParts(messages);
+
+    // Assert
+    expect(trimmed.at(-1)?.parts).toEqual([{ type: 'step-start' }, clarification]);
+    expect(shouldContinueAfterClarification({ messages: trimmed })).toBe(true);
+  });
+
+  it('leaves a history without failures unchanged', () => {
+    // Arrange
+    const messages = [makeUserMessage(), assistant(comparisonPart())];
+
+    // Act
+    const trimmed = dropFailedToolParts(messages);
+
+    // Assert
+    expect(trimmed).toEqual(messages);
+  });
+
+  it('does not mutate the input', () => {
+    // Arrange
+    const messages = [makeUserMessage(), assistant(answeredClarification(), failedComparison())];
+    const snapshot = structuredClone(messages);
+
+    // Act
+    dropFailedToolParts(messages);
+
+    // Assert
+    expect(messages).toEqual(snapshot);
   });
 });
