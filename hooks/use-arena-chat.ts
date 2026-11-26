@@ -8,7 +8,7 @@ import {
   hasFailedTool,
   shouldContinueAfterClarification,
 } from '@/lib/ai/continuation';
-import type { ArenaUIMessage } from '@/lib/ai/messages';
+import type { ArenaUIMessage, GoalAnswer } from '@/lib/ai/messages';
 import { isChatBusy } from '@/lib/chat-status';
 
 const CHAT_API = '/api/chat';
@@ -31,6 +31,11 @@ export const useArenaChat = () => {
     void chat.sendMessage({ text: prompt });
   };
 
+  /** The pick becomes the tool output; sendAutomaticallyWhen then requests the comparison. */
+  const answerClarification = ({ toolCallId, goalId, label }: GoalAnswer) => {
+    void chat.addToolOutput({ tool: 'askClarification', toolCallId, output: { goalId, label } });
+  };
+
   /** Resumes after an answered clarification instead of asking for the goal again. */
   const retry = () => {
     chat.clearError();
@@ -50,6 +55,7 @@ export const useArenaChat = () => {
     hasFailed: chat.error !== undefined || hasFailedTool(chat.messages),
     isBusy: isChatBusy(chat.status),
     startBattle,
+    answerClarification,
     retry,
   };
 };
