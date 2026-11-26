@@ -1,6 +1,6 @@
 import { isToolUIPart } from 'ai';
 
-import type { ArenaUIMessage } from './messages';
+import type { ArenaPart, ArenaUIMessage } from './messages';
 
 /**
  * Auto-send only after the user answered askClarification. Display tools are acknowledged
@@ -17,8 +17,6 @@ export const shouldContinueAfterClarification = ({
   const lastTool = last.parts.filter(isToolUIPart).at(-1);
   return lastTool?.type === 'tool-askClarification' && lastTool.state === 'output-available';
 };
-
-type ArenaPart = ArenaUIMessage['parts'][number];
 
 const isFailedTool = (part: ArenaPart): boolean =>
   isToolUIPart(part) && part.state === 'output-error';

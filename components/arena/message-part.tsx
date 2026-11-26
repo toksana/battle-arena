@@ -1,9 +1,9 @@
-import type { ArenaUIMessage } from '@/lib/ai/messages';
+import type { ArenaPart } from '@/lib/ai/messages';
 
 import { ClarificationPreview, ComparisonPreview, FallbackPreview } from './tool-part-previews';
 
 interface MessagePartProps {
-  part: ArenaUIMessage['parts'][number];
+  part: ArenaPart;
 }
 
 /** Routes each streamed part to its view. Everything renders as plain text, never as HTML. */
