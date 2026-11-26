@@ -3,10 +3,12 @@
 import { useState } from 'react';
 
 import { useArenaChat } from '@/hooks/use-arena-chat';
+import { isRateLimited, rateLimitResetAt } from '@/lib/chat-status';
 import { PRESETS, type Preset } from '@/lib/presets';
 
 import { BattleView } from './battle-view';
 import { ChatErrorNotice } from './chat-error-notice';
+import { CooldownBanner } from './cooldown-banner';
 import { PresetChips } from './preset-chips';
 import { PromptComposer } from './prompt-composer';
 
@@ -48,7 +50,13 @@ export const Arena = () => {
             isBusy={isBusy}
           />
         )}
-        {hasFailed && !isBusy && <ChatErrorNotice error={error} onRetry={retry} />}
+        {hasFailed &&
+          !isBusy &&
+          (isRateLimited(error) ? (
+            <CooldownBanner resetAt={rateLimitResetAt(error)} />
+          ) : (
+            <ChatErrorNotice error={error} onRetry={retry} />
+          ))}
       </section>
       <div className="sticky bottom-0 -mx-4 bg-linear-to-t from-background via-background/95 to-transparent px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <PromptComposer
