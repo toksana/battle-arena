@@ -11,7 +11,9 @@
     "format": "prettier --write \"**/*.{ts,tsx,mts,mjs,json,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,mts,mjs,json,css}\"",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:live": "E2E_LIVE=1 playwright test --grep @live --project desktop"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.186",
@@ -31,6 +33,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/turbopack": "4.3.3",
     "@testing-library/jest-dom": "^8.0.0",
     "@testing-library/react": "^16.3.3",
