@@ -41,7 +41,12 @@ export const Arena = () => {
             <p className="font-mono text-xs">awaiting_dilemma…</p>
           </div>
         ) : (
-          <BattleView messages={messages} onAnswer={answerClarification} isBusy={isBusy} />
+          <BattleView
+            messages={messages}
+            onAnswer={answerClarification}
+            onPickPrompt={setPrompt}
+            isBusy={isBusy}
+          />
         )}
         {hasFailed && !isBusy && <ChatErrorNotice error={error} onRetry={retry} />}
       </section>
