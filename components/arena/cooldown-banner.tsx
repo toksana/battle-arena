@@ -1,0 +1,33 @@
+'use client';
+
+import { Hourglass } from 'lucide-react';
+
+import { useNow } from '@/hooks/use-now';
+import { minutesUntil } from '@/lib/chat-status';
+
+export const COOLDOWN_TITLE = 'Battle Arena is cooling down!';
+export const COOLDOWN_OVER = 'The cooldown is over. Start a new battle whenever you like.';
+
+const waitMessage = (resetAt: number | null, now: number): string => {
+  if (resetAt === null) return 'Try again in a few minutes.';
+  const minutes = minutesUntil(resetAt, now);
+  if (minutes === 0) return COOLDOWN_OVER;
+  return `Try again in ${minutes} min.`;
+};
+
+/** Shown instead of the retry notice: retrying before the window frees up would fail again. */
+export const CooldownBanner = ({ resetAt }: { resetAt: number | null }) => {
+  const now = useNow();
+  return (
+    <div
+      role="status"
+      className="flex items-start gap-3 rounded-lg border border-warning/40 bg-warning/10 px-4 py-3"
+    >
+      <Hourglass aria-hidden className="mt-0.5 size-4 shrink-0 text-warning" />
+      <div className="flex flex-col gap-0.5">
+        <p className="font-medium">{COOLDOWN_TITLE}</p>
+        <p className="text-muted-foreground">{waitMessage(resetAt, now)}</p>
+      </div>
+    </div>
+  );
+};

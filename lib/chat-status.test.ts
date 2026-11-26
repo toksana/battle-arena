@@ -7,6 +7,9 @@ import {
   INVALID_PROMPT_MESSAGE,
   chatErrorMessage,
   isChatBusy,
+  isRateLimited,
+  minutesUntil,
+  rateLimitResetAt,
 } from './chat-status';
 
 const apiError = (statusCode: number, responseBody = faker.lorem.sentence()) =>
@@ -67,5 +70,94 @@ describe('chatErrorMessage', () => {
 
     // Assert
     messages.forEach((message) => expect(message).not.toContain(secret));
+  });
+});
+
+describe('isRateLimited', () => {
+  it.each<[string, unknown, boolean]>([
+    ['a 429', apiError(429), true],
+    ['a 400', apiError(400), false],
+    ['a stream error', new Error(faker.lorem.sentence()), false],
+    ['no error', undefined, false],
+  ])('%s → %s', (_name, error, expected) => {
+    // Act
+    const limited = isRateLimited(error);
+
+    // Assert
+    expect(limited).toBe(expected);
+  });
+});
+
+describe('rateLimitResetAt', () => {
+  it('reads the reset time from a 429 body', () => {
+    // Arrange
+    const resetAt = faker.date.soon().getTime();
+    const error = apiError(429, JSON.stringify({ error: 'rate_limited', resetAt }));
+
+    // Act
+    const value = rateLimitResetAt(error);
+
+    // Assert
+    expect(value).toBe(resetAt);
+  });
+
+  it.each<[string, unknown]>([
+    ['a 429 with a non-JSON body', apiError(429, 'Too Many Requests')],
+    ['a 429 with another JSON shape', apiError(429, JSON.stringify({ retry: 5 }))],
+    [
+      'a 400 with a reset time',
+      apiError(400, JSON.stringify({ error: 'rate_limited', resetAt: 1 })),
+    ],
+    ['a plain error', new Error(faker.lorem.sentence())],
+  ])('returns null for %s', (_name, error) => {
+    // Act
+    const value = rateLimitResetAt(error);
+
+    // Assert
+    expect(value).toBeNull();
+  });
+});
+
+describe('minutesUntil', () => {
+  it('rounds a partial minute up', () => {
+    // Arrange
+    const now = faker.date.recent().getTime();
+
+    // Act
+    const minutes = minutesUntil(now + 61_000, now);
+
+    // Assert
+    expect(minutes).toBe(2);
+  });
+
+  it('never goes below 0 and always covers the remaining time', () => {
+    // Arrange
+    const now = faker.date.recent().getTime();
+    const offsets = faker.helpers.multiple(
+      () => faker.number.int({ min: -600_000, max: 600_000 }),
+      {
+        count: 50,
+      },
+    );
+
+    // Act
+    const values = offsets.map((offset) => minutesUntil(now + offset, now));
+
+    // Assert
+    values.forEach((minutes, index) => {
+      expect(minutes).toBeGreaterThanOrEqual(0);
+      expect(minutes * 60_000).toBeGreaterThanOrEqual(offsets[index]);
+    });
+  });
+
+  it('is 0 exactly at the reset time', () => {
+    // Arrange
+    const now = faker.date.recent().getTime();
+
+    // Act
+    const minutes = minutesUntil(now, now);
+
+    // Assert
+    expect(minutes).toBe(0);
   });
 });
