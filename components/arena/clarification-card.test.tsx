@@ -9,11 +9,20 @@ import { ClarificationCard } from './clarification-card';
 
 type Part = ArenaToolPart<'askClarification'>;
 
+/**
+ * Fixed English labels: random lorem words can occur inside each other or inside a hint,
+ * which made name-based button lookups match several goals.
+ */
+const GOAL_LABELS = ['Get energized', 'Lose weight', 'Fuel a workout'];
+
 const makeClarification = (): Clarification => ({
   question: faker.lorem.sentence(),
-  goals: faker.helpers
-    .uniqueArray(() => faker.lorem.word(), GOAL_COUNT)
-    .map((label) => ({ id: faker.string.uuid(), label, emoji: '⚡', hint: faker.lorem.words(3) })),
+  goals: GOAL_LABELS.slice(0, GOAL_COUNT).map((label) => ({
+    id: faker.string.uuid(),
+    label,
+    emoji: '⚡',
+    hint: faker.lorem.words(3),
+  })),
 });
 
 const askedPart = (input = makeClarification()): Part => ({
@@ -43,12 +52,13 @@ describe('ClarificationCard', () => {
     // Arrange
     const input = makeClarification();
     const part = askedPart(input);
-    const goal = faker.helpers.arrayElement(input.goals);
+    const index = faker.number.int({ min: 0, max: GOAL_COUNT - 1 });
+    const goal = input.goals[index];
     const onAnswer = vi.fn();
     render(<ClarificationCard part={part} onAnswer={onAnswer} />);
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: new RegExp(goal.label) }));
+    fireEvent.click(goalButtons()[index]);
 
     // Assert
     expect(onAnswer).toHaveBeenCalledExactlyOnceWith({

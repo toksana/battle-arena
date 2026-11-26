@@ -28,15 +28,14 @@ describe('PresetChips', () => {
   it('calls onSelect with the clicked preset', () => {
     // Arrange
     const presets = faker.helpers.multiple(makePreset, { count: 3 });
-    const target = faker.helpers.arrayElement(presets);
     const onSelect = vi.fn();
     render(<PresetChips presets={presets} onSelect={onSelect} />);
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: new RegExp(target.label) }));
+    screen.getAllByRole('button').forEach((button) => fireEvent.click(button));
 
     // Assert
-    expect(onSelect).toHaveBeenCalledExactlyOnceWith(target);
+    expect(onSelect.mock.calls).toEqual(presets.map((preset) => [preset]));
   });
 
   it('disables every chip when disabled', () => {
