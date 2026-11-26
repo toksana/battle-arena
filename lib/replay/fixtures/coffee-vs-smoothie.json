@@ -1,0 +1,349 @@
+{
+  "presetId": "coffee-vs-smoothie",
+  "clarification": {
+    "question": "What should Coffee vs. Smoothie optimize for?",
+    "goals": [
+      {
+        "id": "get-energized",
+        "label": "Get energized",
+        "emoji": "⚡",
+        "hint": "Quick, sustained alertness for the morning"
+      },
+      {
+        "id": "lose-weight",
+        "label": "Lose weight",
+        "emoji": "⚖️",
+        "hint": "Lower calories and better appetite control"
+      },
+      {
+        "id": "fuel-workout",
+        "label": "Fuel a workout",
+        "emoji": "🏋️",
+        "hint": "Pre-exercise energy and recovery support"
+      }
+    ]
+  },
+  "comparisons": [
+    {
+      "goalId": "get-energized",
+      "comparison": {
+        "isRelevant": true,
+        "fallbackReason": null,
+        "title": "Coffee vs. Smoothie",
+        "goal": "Get energized",
+        "options": [
+          {
+            "name": "Coffee",
+            "emoji": "☕",
+            "tagline": "Fast, reliable caffeine lift",
+            "metrics": [
+              {
+                "label": "Caffeine",
+                "value": "~95 mg"
+              },
+              {
+                "label": "Calories",
+                "value": "~5 kcal"
+              },
+              {
+                "label": "Onset",
+                "value": "~15-30 min"
+              },
+              {
+                "label": "Cost",
+                "value": "Low"
+              }
+            ],
+            "pros": ["Quick alertness boost", "Very low calories", "Cheap and widely available"],
+            "cons": [
+              "Can cause jitters or crash",
+              "Interferes with sleep if late",
+              "Little sustained fuel"
+            ]
+          },
+          {
+            "name": "Smoothie",
+            "emoji": "🥤",
+            "tagline": "Slow-release fuel with nutrients",
+            "metrics": [
+              {
+                "label": "Caffeine",
+                "value": "~0 mg"
+              },
+              {
+                "label": "Calories",
+                "value": "~250-400 kcal"
+              },
+              {
+                "label": "Onset",
+                "value": "~20-40 min"
+              },
+              {
+                "label": "Cost",
+                "value": "Medium"
+              }
+            ],
+            "pros": [
+              "Steady energy from carbs and protein",
+              "Adds fruit, vegetables, fiber",
+              "No caffeine crash"
+            ],
+            "cons": [
+              "Slower to feel an effect",
+              "Higher calories and sugar",
+              "Costs more to make or buy"
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "label": "Quick boost",
+            "defaultWeight": 5,
+            "scoreA": 9,
+            "scoreB": 4,
+            "rationale": "Caffeine acts within minutes; smoothies take longer to digest"
+          },
+          {
+            "label": "Sustained energy",
+            "defaultWeight": 4,
+            "scoreA": 4,
+            "scoreB": 8,
+            "rationale": "Protein and fiber in smoothies give a steadier curve"
+          },
+          {
+            "label": "No crash",
+            "defaultWeight": 3,
+            "scoreA": 4,
+            "scoreB": 8,
+            "rationale": "Coffee can lead to a mid-day dip; smoothies are gentler"
+          },
+          {
+            "label": "Cost",
+            "defaultWeight": 2,
+            "scoreA": 9,
+            "scoreB": 5,
+            "rationale": "Brewed coffee is far cheaper per serving"
+          }
+        ],
+        "verdict": {
+          "summary": "For a fast wake-up, coffee wins; for steadier energy without caffeine, a protein-rich smoothie is the better pick. Many people combine the two, or drink coffee first and a smoothie later.",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "goalId": "lose-weight",
+      "comparison": {
+        "isRelevant": true,
+        "fallbackReason": null,
+        "title": "Coffee vs. Smoothie",
+        "goal": "Lose weight",
+        "options": [
+          {
+            "name": "Coffee",
+            "emoji": "☕",
+            "tagline": "Near-zero calorie, appetite-neutral pick-me-up",
+            "metrics": [
+              {
+                "label": "Calories",
+                "value": "~5 kcal"
+              },
+              {
+                "label": "Sugar",
+                "value": "~0 g"
+              },
+              {
+                "label": "Caffeine",
+                "value": "~95 mg"
+              },
+              {
+                "label": "Prep time",
+                "value": "~2 min"
+              }
+            ],
+            "pros": [
+              "Very low calories",
+              "Caffeine may modestly boost metabolism",
+              "Easy to keep plain"
+            ],
+            "cons": [
+              "Adds little fullness",
+              "Sweetened versions add calories fast",
+              "Can increase cravings for snacks"
+            ]
+          },
+          {
+            "name": "Smoothie",
+            "emoji": "🥤",
+            "tagline": "Filling meal-replacement style drink",
+            "metrics": [
+              {
+                "label": "Calories",
+                "value": "~250-400 kcal"
+              },
+              {
+                "label": "Sugar",
+                "value": "~30-50 g"
+              },
+              {
+                "label": "Protein",
+                "value": "~10-20 g"
+              },
+              {
+                "label": "Prep time",
+                "value": "~5 min"
+              }
+            ],
+            "pros": [
+              "Keeps you full longer",
+              "Fiber and protein support appetite control",
+              "Easy way to add produce"
+            ],
+            "cons": [
+              "Calories add up quickly",
+              "Fruit-heavy recipes spike sugar",
+              "Easy to overconsume as a snack"
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "label": "Calorie load",
+            "defaultWeight": 5,
+            "scoreA": 10,
+            "scoreB": 4,
+            "rationale": "Black coffee is nearly calorie-free; smoothies carry a full meal's worth."
+          },
+          {
+            "label": "Satiety",
+            "defaultWeight": 4,
+            "scoreA": 2,
+            "scoreB": 8,
+            "rationale": "Protein and fiber in smoothies curb hunger far better than coffee."
+          },
+          {
+            "label": "Sugar control",
+            "defaultWeight": 3,
+            "scoreA": 9,
+            "scoreB": 4,
+            "rationale": "Plain coffee has no sugar; fruit smoothies can be sugar-heavy."
+          },
+          {
+            "label": "Craving control",
+            "defaultWeight": 3,
+            "scoreA": 5,
+            "scoreB": 7,
+            "rationale": "Coffee can trigger snacking; a filling smoothie tends to reduce it."
+          }
+        ],
+        "verdict": {
+          "summary": "For weight loss, black coffee wins on calories, while a smoothie helps only if it replaces a meal rather than adding to one. Keep smoothies protein-rich and low in fruit sugar to make them work.",
+          "confidence": "medium"
+        }
+      }
+    },
+    {
+      "goalId": "fuel-workout",
+      "comparison": {
+        "isRelevant": true,
+        "fallbackReason": null,
+        "title": "Coffee vs. Smoothie",
+        "goal": "Fuel a workout",
+        "options": [
+          {
+            "name": "Coffee",
+            "emoji": "☕",
+            "tagline": "Fast caffeine lift before training",
+            "metrics": [
+              {
+                "label": "Calories",
+                "value": "~5 kcal"
+              },
+              {
+                "label": "Caffeine",
+                "value": "~95 mg"
+              },
+              {
+                "label": "Prep time",
+                "value": "~2 min"
+              }
+            ],
+            "pros": [
+              "Boosts alertness and perceived effort",
+              "Very low calorie",
+              "Quick and cheap to prepare"
+            ],
+            "cons": [
+              "No carbs or protein for fuel",
+              "Can upset stomach before intense sessions",
+              "Caffeine may disrupt sleep if late"
+            ]
+          },
+          {
+            "name": "Smoothie",
+            "emoji": "🥤",
+            "tagline": "Carbs and protein to fuel and recover",
+            "metrics": [
+              {
+                "label": "Calories",
+                "value": "~250 kcal"
+              },
+              {
+                "label": "Carbs",
+                "value": "~40 g"
+              },
+              {
+                "label": "Prep time",
+                "value": "~5 min"
+              }
+            ],
+            "pros": [
+              "Provides carbs for energy stores",
+              "Protein supports muscle recovery",
+              "Easy to digest when made with fruit"
+            ],
+            "cons": [
+              "No strong alertness boost on its own",
+              "Higher calorie count",
+              "Can be heavy if eaten right before training"
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "label": "Energy supply",
+            "defaultWeight": 5,
+            "scoreA": 4,
+            "scoreB": 8,
+            "rationale": "Smoothie supplies carbs; coffee gives alertness, not fuel"
+          },
+          {
+            "label": "Alertness",
+            "defaultWeight": 4,
+            "scoreA": 9,
+            "scoreB": 3,
+            "rationale": "Caffeine strongly sharpens focus and effort perception"
+          },
+          {
+            "label": "Recovery",
+            "defaultWeight": 3,
+            "scoreA": 2,
+            "scoreB": 8,
+            "rationale": "Protein and carbs in smoothie aid muscle repair"
+          },
+          {
+            "label": "Stomach comfort",
+            "defaultWeight": 3,
+            "scoreA": 6,
+            "scoreB": 7,
+            "rationale": "Coffee can irritate; smoothie can feel heavy if large"
+          }
+        ],
+        "verdict": {
+          "summary": "For fueling a workout, a smoothie is the better base since it supplies carbs and protein. Coffee works well as an add-on, or alone for short, low-intensity sessions.",
+          "confidence": "high"
+        }
+      }
+    }
+  ]
+}
