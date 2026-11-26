@@ -1,7 +1,8 @@
 import type { ArenaPart, GoalAnswer } from '@/lib/ai/messages';
 
 import { ClarificationCard } from './clarification-card';
-import { ComparisonPreview, FallbackPreview } from './tool-part-previews';
+import { FallbackChipsCard } from './fallback-chips';
+import { ComparisonPreview } from './tool-part-previews';
 
 interface MessagePartProps {
   part: ArenaPart;
@@ -21,7 +22,7 @@ export const MessagePart = ({ part, onAnswer, isBusy }: MessagePartProps) => {
     case 'tool-renderComparison':
       return <ComparisonPreview part={part} />;
     case 'tool-renderFallbackChips':
-      return <FallbackPreview part={part} />;
+      return part.state === 'output-error' ? null : <FallbackChipsCard part={part} />;
     default:
       // step-start, reasoning, sources, files: not part of the arena UI.
       return null;
