@@ -10,6 +10,9 @@ interface BattleViewProps {
   isBusy?: boolean;
 }
 
+/** Marks a replayed battle so nobody mistakes the recording for a live model answer. */
+export const PRE_RENDERED_LABEL = 'Pre-rendered';
+
 const textOf = (message: ArenaUIMessage): string =>
   message.parts.flatMap((part) => (part.type === 'text' ? [part.text] : [])).join(' ');
 
@@ -25,7 +28,16 @@ export const BattleView = ({
 
   return (
     <article aria-label="Current battle" className="flex flex-col gap-4">
-      {dilemma && <h2 className="text-base font-semibold break-words">{textOf(dilemma)}</h2>}
+      {dilemma && (
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 className="text-base font-semibold break-words">{textOf(dilemma)}</h2>
+          {dilemma.metadata?.replayPresetId && (
+            <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[0.65rem] text-muted-foreground uppercase">
+              {PRE_RENDERED_LABEL}
+            </span>
+          )}
+        </div>
+      )}
       {replies.flatMap((message) =>
         message.parts.map((part, index) => (
           <MessagePart

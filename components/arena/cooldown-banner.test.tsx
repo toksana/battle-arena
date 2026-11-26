@@ -1,7 +1,14 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { COOLDOWN_OVER, COOLDOWN_TITLE, CooldownBanner } from './cooldown-banner';
+import { PRESETS } from '@/lib/presets';
+
+import {
+  COOLDOWN_OVER,
+  COOLDOWN_TITLE,
+  CooldownBanner,
+  REPLAY_CHIPS_LABEL,
+} from './cooldown-banner';
 
 const NOW = new Date('2026-11-26T12:00:00Z').getTime();
 const MINUTE = 60_000;
@@ -44,5 +51,29 @@ describe('CooldownBanner', () => {
 
     // Assert
     expect(screen.getByText('Try again in a few minutes.')).toBeInTheDocument();
+  });
+
+  it('offers the pre-rendered presets and replays the picked one', () => {
+    // Arrange
+    const onReplay = vi.fn();
+    render(<CooldownBanner resetAt={NOW + MINUTE} replays={PRESETS} onReplay={onReplay} />);
+    const chips = within(screen.getByRole('list', { name: REPLAY_CHIPS_LABEL })).getAllByRole(
+      'button',
+    );
+
+    // Act
+    fireEvent.click(chips[1]);
+
+    // Assert
+    expect(chips).toHaveLength(PRESETS.length);
+    expect(onReplay).toHaveBeenCalledExactlyOnceWith(PRESETS[1]);
+  });
+
+  it('shows no replay chips without recordings', () => {
+    // Act
+    render(<CooldownBanner resetAt={NOW + MINUTE} />);
+
+    // Assert
+    expect(screen.queryByRole('list', { name: REPLAY_CHIPS_LABEL })).toBeNull();
   });
 });

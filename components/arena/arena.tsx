@@ -15,8 +15,16 @@ import { PromptComposer } from './prompt-composer';
 /** Wires the composer and presets to the chat: one battle on screen at a time. */
 export const Arena = () => {
   const [prompt, setPrompt] = useState('');
-  const { messages, error, hasFailed, isBusy, startBattle, answerClarification, retry } =
-    useArenaChat();
+  const {
+    messages,
+    error,
+    hasFailed,
+    isBusy,
+    startBattle,
+    startReplay,
+    answerClarification,
+    retry,
+  } = useArenaChat();
 
   const handlePreset = (preset: Preset) => setPrompt(preset.prompt);
 
@@ -53,7 +61,11 @@ export const Arena = () => {
         {hasFailed &&
           !isBusy &&
           (isRateLimited(error) ? (
-            <CooldownBanner resetAt={rateLimitResetAt(error)} />
+            <CooldownBanner
+              resetAt={rateLimitResetAt(error)}
+              replays={PRESETS}
+              onReplay={startReplay}
+            />
           ) : (
             <ChatErrorNotice error={error} onRetry={retry} />
           ))}
