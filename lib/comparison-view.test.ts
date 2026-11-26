@@ -66,12 +66,12 @@ describe('scorePercent', () => {
 });
 
 describe('isCriterionReady', () => {
-  it('accepts a criterion with label and both scores, even without rationale', () => {
+  it('accepts a criterion with label, weight and both scores, even without rationale', () => {
     // Arrange
-    const { label, scoreA, scoreB } = makeCriterion();
+    const { label, defaultWeight, scoreA, scoreB } = makeCriterion();
 
     // Act
-    const ready = isCriterionReady({ label, scoreA, scoreB });
+    const ready = isCriterionReady({ label, defaultWeight, scoreA, scoreB });
 
     // Assert
     expect(ready).toBe(true);
@@ -85,16 +85,19 @@ describe('isCriterionReady', () => {
     expect(ready).toBe(true);
   });
 
-  it.each(['label', 'scoreA', 'scoreB'] as const)('rejects a criterion missing %s', (field) => {
-    // Arrange
-    const criterion = { ...makeCriterion(), [field]: undefined };
+  it.each(['label', 'defaultWeight', 'scoreA', 'scoreB'] as const)(
+    'rejects a criterion missing %s',
+    (field) => {
+      // Arrange
+      const criterion = { ...makeCriterion(), [field]: undefined };
 
-    // Act
-    const ready = isCriterionReady(criterion);
+      // Act
+      const ready = isCriterionReady(criterion);
 
-    // Assert
-    expect(ready).toBe(false);
-  });
+      // Assert
+      expect(ready).toBe(false);
+    },
+  );
 
   it('rejects a hole in the array', () => {
     // Act

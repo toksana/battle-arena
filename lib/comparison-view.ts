@@ -12,14 +12,15 @@ export const scorePercent = (score: number): number => {
   return ((clamped - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)) * 100;
 };
 
-export type ReadyCriterion = Pick<Criterion, 'label' | 'scoreA' | 'scoreB'> & {
+export type ReadyCriterion = Pick<Criterion, 'label' | 'defaultWeight' | 'scoreA' | 'scoreB'> & {
   rationale?: string;
 };
 
-/** A criterion row can render once its label and both scores have streamed in. */
+/** A criterion row can render once its label, default weight and both scores have streamed in. */
 export const isCriterionReady = (
   criterion: DeepPartial<Criterion> | undefined,
 ): criterion is ReadyCriterion =>
   typeof criterion?.label === 'string' &&
+  typeof criterion.defaultWeight === 'number' &&
   typeof criterion.scoreA === 'number' &&
   typeof criterion.scoreB === 'number';
