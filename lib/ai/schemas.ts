@@ -17,8 +17,18 @@ export const MAX_WEIGHT = 5;
 export const MIN_SCORE = 0;
 export const MAX_SCORE = 10;
 
+/** Share of the hard limit the model is asked to stay under: models overshoot length limits. */
+export const SOFT_LIMIT_RATIO = 0.8;
+
+/** The model sees a soft limit in the description; Zod enforces the hard one with headroom. */
 const text = (max: number, description: string) =>
-  z.string().max(max).describe(`${description} Max ${max} characters.`);
+  z
+    .string()
+    .max(max)
+    .describe(`${description} Aim for at most ${Math.floor(max * SOFT_LIMIT_RATIO)} characters.`);
+
+/** ZWJ sequences and variation selectors make one visible emoji up to ~8 UTF-16 units. */
+const emoji = () => z.string().max(8).describe('Exactly one emoji.');
 
 const score = (side: 'A' | 'B') =>
   z
@@ -37,7 +47,7 @@ export const MetricSchema = z.object({
 
 export const OptionSchema = z.object({
   name: text(40, 'Option name.'),
-  emoji: text(4, 'One emoji representing the option.'),
+  emoji: emoji(),
   tagline: text(80, 'One-line characterization.'),
   metrics: z.array(MetricSchema).max(4).describe('Up to 4 key quantitative facts.'),
   pros: z.array(text(80, 'One advantage.')).min(1).max(4),
@@ -79,13 +89,16 @@ export const ComparisonSchema = z.object({
 });
 
 export const ClarificationSchema = z.object({
-  question: text(80, 'Short question about what the user optimizes for.'),
+  question: text(
+    80,
+    'Short question naming both options, e.g. "What should Coffee vs. Smoothie optimize for?".',
+  ),
   goals: z
     .array(
       z.object({
         id: text(24, 'Stable slug, e.g. "lose-weight".'),
         label: text(24, 'Goal label, e.g. "Lose weight".'),
-        emoji: text(4, 'One emoji.'),
+        emoji: emoji(),
         hint: text(60, 'One-line hint of what this goal prioritizes.'),
       }),
     )
@@ -99,6 +112,7 @@ export const ClarificationAnswerSchema = z.object({
 });
 
 export const FallbackChipsSchema = z.object({
+  message: text(140, 'One neutral sentence stating that you only compare two options.'),
   prompts: z
     .array(
       text(

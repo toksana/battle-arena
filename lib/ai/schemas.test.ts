@@ -125,8 +125,9 @@ describe('FallbackChipsSchema', () => {
     const prompts = ['Morning vs evening run', 'Treadmill vs outdoor', 'Shoes vs barefoot'];
 
     // Act
-    const valid = FallbackChipsSchema.safeParse({ prompts });
-    const tooFew = FallbackChipsSchema.safeParse({ prompts: prompts.slice(0, 2) });
+    const message = 'I only compare two options.';
+    const valid = FallbackChipsSchema.safeParse({ message, prompts });
+    const tooFew = FallbackChipsSchema.safeParse({ message, prompts: prompts.slice(0, 2) });
 
     // Assert
     expect(valid.error).toBeUndefined();
