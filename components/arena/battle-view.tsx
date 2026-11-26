@@ -5,6 +5,8 @@ import { MessagePart } from './message-part';
 interface BattleViewProps {
   messages: readonly ArenaUIMessage[];
   onAnswer?: (answer: GoalAnswer) => void;
+  /** A suggested dilemma was picked; the arena puts it into the composer. */
+  onPickPrompt?: (prompt: string) => void;
   isBusy?: boolean;
 }
 
@@ -12,7 +14,12 @@ const textOf = (message: ArenaUIMessage): string =>
   message.parts.flatMap((part) => (part.type === 'text' ? [part.text] : [])).join(' ');
 
 /** One battle: the user's dilemma as a heading, then every assistant part in order. */
-export const BattleView = ({ messages, onAnswer, isBusy = false }: BattleViewProps) => {
+export const BattleView = ({
+  messages,
+  onAnswer,
+  onPickPrompt,
+  isBusy = false,
+}: BattleViewProps) => {
   const dilemma = messages.find((message) => message.role === 'user');
   const replies = messages.filter((message) => message.role === 'assistant');
 
@@ -25,6 +32,7 @@ export const BattleView = ({ messages, onAnswer, isBusy = false }: BattleViewPro
             key={`${message.id}-${index}`}
             part={part}
             onAnswer={onAnswer}
+            onPickPrompt={onPickPrompt}
             isBusy={isBusy}
           />
         )),

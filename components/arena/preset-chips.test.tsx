@@ -49,4 +49,27 @@ describe('PresetChips', () => {
     // Assert
     screen.getAllByRole('button').forEach((button) => expect(button).toBeDisabled());
   });
+
+  it('names the list with the given label', () => {
+    // Arrange
+    const label = faker.lorem.words(2);
+
+    // Act
+    render(<PresetChips presets={[makePreset()]} label={label} />);
+
+    // Assert
+    expect(screen.getByRole('list', { name: label })).toBeInTheDocument();
+  });
+
+  it('renders a chip without an emoji as plain text', () => {
+    // Arrange
+    const preset = { ...makePreset(), emoji: '' };
+
+    // Act
+    const { container } = render(<PresetChips presets={[preset]} />);
+
+    // Assert
+    expect(screen.getByRole('button')).toHaveTextContent(preset.label);
+    expect(container.querySelector('[aria-hidden]')).toBeNull();
+  });
 });

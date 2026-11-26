@@ -126,4 +126,32 @@ describe('BattleView', () => {
     });
     expect(screen.getByRole('button', { name: /Get energized/ })).toBeDisabled();
   });
+
+  it('passes a picked fallback dilemma up and locks the chips while busy', () => {
+    // Arrange
+    const prompts = ['Morning vs evening run', 'Treadmill vs outdoor running', 'Shoes vs barefoot'];
+    const fallback = assistant([
+      {
+        type: 'tool-renderFallbackChips',
+        toolCallId: faker.string.uuid(),
+        state: 'output-available',
+        input: { message: faker.lorem.sentence(), prompts },
+        output: { rendered: true },
+      },
+    ]);
+    const onPickPrompt = vi.fn();
+    const { rerender } = render(
+      <BattleView messages={[makeUserMessage(), fallback]} onPickPrompt={onPickPrompt} />,
+    );
+
+    // Act
+    fireEvent.click(screen.getByRole('button', { name: prompts[1] }));
+    rerender(
+      <BattleView messages={[makeUserMessage(), fallback]} onPickPrompt={onPickPrompt} isBusy />,
+    );
+
+    // Assert
+    expect(onPickPrompt).toHaveBeenCalledExactlyOnceWith(prompts[1]);
+    expect(screen.getByRole('button', { name: prompts[0] })).toBeDisabled();
+  });
 });
