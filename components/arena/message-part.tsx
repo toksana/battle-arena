@@ -1,6 +1,7 @@
 import type { ArenaPart } from '@/lib/ai/messages';
 
-import { ClarificationPreview, ComparisonPreview, FallbackPreview } from './tool-part-previews';
+import { ClarificationCard } from './clarification-card';
+import { ComparisonPreview, FallbackPreview } from './tool-part-previews';
 
 interface MessagePartProps {
   part: ArenaPart;
@@ -12,7 +13,7 @@ export const MessagePart = ({ part }: MessagePartProps) => {
     case 'text':
       return <p className="whitespace-pre-wrap">{part.text}</p>;
     case 'tool-askClarification':
-      return <ClarificationPreview part={part} />;
+      return part.state === 'output-error' ? null : <ClarificationCard part={part} />;
     case 'tool-renderComparison':
       return <ComparisonPreview part={part} />;
     case 'tool-renderFallbackChips':

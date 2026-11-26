@@ -1,6 +1,7 @@
 import type { UIMessage } from 'ai';
 import { z } from 'zod';
 
+import type { ClarificationAnswer } from './schemas';
 import type { ArenaToolName, ArenaTools } from './tools';
 
 export const MessageMetadataSchema = z.object({
@@ -23,3 +24,8 @@ export type ArenaToolPart<Name extends ArenaToolName> = Extract<
   ArenaPart,
   { type: `tool-${Name}` }
 >;
+
+/** A picked clarification goal, addressed to the tool call it answers. */
+export interface GoalAnswer extends ClarificationAnswer {
+  toolCallId: string;
+}

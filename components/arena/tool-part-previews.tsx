@@ -2,7 +2,7 @@ import type { DeepPartial } from 'ai';
 
 import type { ArenaToolPart } from '@/lib/ai/messages';
 import type { ArenaToolName } from '@/lib/ai/tools';
-import type { Clarification, FallbackChips } from '@/lib/ai/schemas';
+import type { FallbackChips } from '@/lib/ai/schemas';
 
 import { ComparisonCard } from './comparison-card';
 
@@ -18,24 +18,7 @@ const ToolStatus = ({ state }: { state: ArenaToolPart<ArenaToolName>['state'] })
   return null;
 };
 
-// Plain-text placeholders: slices 10 and 11 replace them with real components.
-
-export const ClarificationPreview = ({ part }: { part: ArenaToolPart<'askClarification'> }) => {
-  const input: DeepPartial<Clarification> | undefined = part.input;
-  return (
-    <div className="flex flex-col gap-1">
-      <p className="font-medium">{input?.question}</p>
-      <ul className="flex flex-wrap gap-x-3 text-muted-foreground">
-        {input?.goals?.map((goal, index) => (
-          <li key={goal?.id ?? index}>
-            {goal?.emoji} {goal?.label}
-          </li>
-        ))}
-      </ul>
-      <ToolStatus state={part.state} />
-    </div>
-  );
-};
+// Plain-text placeholder: slice 11 replaces the fallback preview with real chips.
 
 export const ComparisonPreview = ({ part }: { part: ArenaToolPart<'renderComparison'> }) =>
   part.state === 'output-error' ? null : (
