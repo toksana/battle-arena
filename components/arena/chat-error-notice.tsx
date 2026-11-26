@@ -6,7 +6,8 @@ import { chatErrorMessage } from '@/lib/chat-status';
 export const RETRY_LABEL = 'Try again';
 
 interface ChatErrorNoticeProps {
-  error: unknown;
+  /** Undefined when a tool call failed inside an otherwise successful stream. */
+  error?: unknown;
   onRetry: () => void;
 }
 

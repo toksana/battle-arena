@@ -7,7 +7,6 @@ import { makeComparison } from '@/test/factories';
 import { makeComparisonMessage, makeUserMessage } from '@/test/messages';
 
 import { BattleView } from './battle-view';
-import { STREAMING_LABEL, TOOL_ERROR_MESSAGE } from './tool-part-previews';
 
 const assistant = (parts: ArenaUIMessage['parts']): ArenaUIMessage => ({
   id: faker.string.uuid(),
@@ -28,10 +27,13 @@ describe('BattleView', () => {
     expect(screen.getByRole('heading', { name: dilemma })).toBeInTheDocument();
     expect(screen.getByText(comparison.title)).toBeInTheDocument();
     expect(screen.getByText(comparison.verdict.summary)).toBeInTheDocument();
-    expect(screen.queryByText(STREAMING_LABEL)).toBeNull();
+    expect(screen.getByRole('article', { name: 'Comparison' })).toHaveAttribute(
+      'aria-busy',
+      'false',
+    );
   });
 
-  it('renders a partially streamed comparison with a streaming status', () => {
+  it('renders a partially streamed comparison as busy', () => {
     // Arrange
     const title = faker.lorem.words(3);
     const streaming = assistant([
@@ -48,18 +50,22 @@ describe('BattleView', () => {
 
     // Assert
     expect(screen.getByText(title)).toBeInTheDocument();
-    expect(screen.getByText(STREAMING_LABEL)).toBeInTheDocument();
+    expect(screen.getByRole('article', { name: 'Comparison' })).toHaveAttribute(
+      'aria-busy',
+      'true',
+    );
   });
 
-  it('shows fixed copy instead of the tool error text', () => {
+  it('drops a failed comparison and never shows its error text', () => {
     // Arrange
     const errorText = faker.lorem.sentence();
+    const comparison = makeComparison();
     const failed = assistant([
       {
-        type: 'tool-askClarification',
+        type: 'tool-renderComparison',
         toolCallId: faker.string.uuid(),
         state: 'output-error',
-        input: undefined,
+        input: comparison,
         errorText,
       },
     ]);
@@ -68,7 +74,8 @@ describe('BattleView', () => {
     render(<BattleView messages={[makeUserMessage(), failed]} />);
 
     // Assert
-    expect(screen.getByText(TOOL_ERROR_MESSAGE)).toBeInTheDocument();
+    expect(screen.queryByRole('article', { name: 'Comparison' })).toBeNull();
+    expect(screen.queryByText(comparison.title)).toBeNull();
     expect(screen.queryByText(errorText)).toBeNull();
   });
 

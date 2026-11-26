@@ -1,8 +1,13 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
+import { DefaultChatTransport } from 'ai';
 
+import {
+  dropFailedToolParts,
+  hasFailedTool,
+  shouldContinueAfterClarification,
+} from '@/lib/ai/continuation';
 import type { ArenaUIMessage } from '@/lib/ai/messages';
 import { isChatBusy } from '@/lib/chat-status';
 
@@ -18,7 +23,7 @@ const transport = new DefaultChatTransport<ArenaUIMessage>({ api: CHAT_API });
 export const useArenaChat = () => {
   const chat = useChat<ArenaUIMessage>({
     transport,
-    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+    sendAutomaticallyWhen: shouldContinueAfterClarification,
   });
 
   const startBattle = (prompt: string) => {
@@ -26,8 +31,15 @@ export const useArenaChat = () => {
     void chat.sendMessage({ text: prompt });
   };
 
+  /** Resumes after an answered clarification instead of asking for the goal again. */
   const retry = () => {
     chat.clearError();
+    const trimmed = dropFailedToolParts(chat.messages);
+    if (shouldContinueAfterClarification({ messages: trimmed })) {
+      chat.setMessages(trimmed);
+      void chat.sendMessage();
+      return;
+    }
     void chat.regenerate();
   };
 
@@ -35,6 +47,7 @@ export const useArenaChat = () => {
     messages: chat.messages,
     status: chat.status,
     error: chat.error,
+    hasFailed: chat.error !== undefined || hasFailedTool(chat.messages),
     isBusy: isChatBusy(chat.status),
     startBattle,
     retry,

@@ -5,6 +5,7 @@ import {
   MAX_WEIGHT,
   MIN_SCORE,
   MIN_WEIGHT,
+  OPTION_COUNT,
   type Comparison,
   type Criterion,
   type Option,
@@ -40,7 +41,10 @@ export const makeComparison = (overrides: Partial<Comparison> = {}): Comparison 
   fallbackReason: null,
   title: 'Coffee vs. Smoothie',
   goal: short(40),
-  options: [makeOption(), makeOption()],
+  // Distinct names: tests look options up by name, and the product list is short.
+  options: faker.helpers
+    .uniqueArray(() => faker.commerce.product().slice(0, 40), OPTION_COUNT)
+    .map((name) => makeOption({ name })),
   criteria: faker.helpers.multiple(() => makeCriterion(), { count: { min: 3, max: 5 } }),
   verdict: { summary: faker.lorem.sentence().slice(0, 240), confidence: 'medium' },
   ...overrides,

@@ -10,6 +10,9 @@ import {
   FallbackChipsSchema,
   MAX_SCORE,
   MAX_WEIGHT,
+  TITLE_LENGTH,
+  hardLimit,
+  softLimit,
 } from './schemas';
 
 /** JSON Schema keywords that some providers reject in tool input schemas. */
@@ -92,9 +95,20 @@ describe('ComparisonSchema', () => {
     expect(result.error).toBeInstanceOf(z.ZodError);
   });
 
+  it('accepts a title at the hard limit', () => {
+    // Arrange
+    const comparison = makeComparison({ title: faker.string.alpha(hardLimit(TITLE_LENGTH)) });
+
+    // Act
+    const result = ComparisonSchema.safeParse(comparison);
+
+    // Assert
+    expect(result.error).toBeUndefined();
+  });
+
   it('rejects a title above the length limit', () => {
     // Arrange
-    const comparison = makeComparison({ title: faker.string.alpha(61) });
+    const comparison = makeComparison({ title: faker.string.alpha(hardLimit(TITLE_LENGTH) + 1) });
 
     // Act
     const result = ComparisonSchema.safeParse(comparison);
@@ -161,5 +175,34 @@ describe('JSON Schema sent to the model', () => {
     // Assert
     expect(order.indexOf('title')).toBeLessThan(order.indexOf('options'));
     expect(order.at(-1)).toBe('verdict');
+  });
+});
+
+describe('length budget', () => {
+  it('asks for less than the design length and accepts more, for any length', () => {
+    // Arrange
+    const lengths = faker.helpers.multiple(() => faker.number.int({ min: 10, max: 500 }), {
+      count: 50,
+    });
+
+    // Act
+    const budgets = lengths.map((length) => [softLimit(length), length, hardLimit(length)]);
+
+    // Assert
+    budgets.forEach(([soft, length, hard]) => {
+      expect(soft).toBeLessThan(length);
+      expect(hard).toBeGreaterThan(length);
+    });
+  });
+
+  it('leaves room for the observed ~35% overshoot of the soft limit', () => {
+    // Arrange
+    const OBSERVED_OVERSHOOT = 1.35;
+
+    // Act
+    const overshoot = Math.ceil(softLimit(TITLE_LENGTH) * OBSERVED_OVERSHOOT);
+
+    // Assert
+    expect(overshoot).toBeLessThanOrEqual(hardLimit(TITLE_LENGTH));
   });
 });
