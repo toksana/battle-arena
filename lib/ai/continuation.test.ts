@@ -9,9 +9,7 @@ import {
   hasFailedTool,
   shouldContinueAfterClarification,
 } from './continuation';
-import type { ArenaUIMessage } from './messages';
-
-type Part = ArenaUIMessage['parts'][number];
+import type { ArenaPart as Part, ArenaUIMessage } from './messages';
 
 const clarificationInput = {
   question: faker.lorem.sentence(),

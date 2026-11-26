@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { ArenaUIMessage } from '@/lib/ai/messages';
 import { makeComparison } from '@/test/factories';
@@ -90,5 +90,40 @@ describe('BattleView', () => {
     // Assert
     expect(container.querySelector('img')).toBeNull();
     expect(screen.getAllByText(markup)).toHaveLength(2);
+  });
+
+  it('passes a picked goal up and locks the goals while busy', () => {
+    // Arrange
+    const toolCallId = faker.string.uuid();
+    const goals = ['Get energized', 'Lose weight', 'Fuel a workout'].map((label) => ({
+      id: faker.string.uuid(),
+      label,
+      emoji: '⚡',
+      hint: faker.lorem.words(3),
+    }));
+    const asked = assistant([
+      {
+        type: 'tool-askClarification',
+        toolCallId,
+        state: 'input-available',
+        input: { question: faker.lorem.sentence(), goals },
+      },
+    ]);
+    const onAnswer = vi.fn();
+    const { rerender } = render(
+      <BattleView messages={[makeUserMessage(), asked]} onAnswer={onAnswer} />,
+    );
+
+    // Act
+    fireEvent.click(screen.getByRole('button', { name: /Lose weight/ }));
+    rerender(<BattleView messages={[makeUserMessage(), asked]} onAnswer={onAnswer} isBusy />);
+
+    // Assert
+    expect(onAnswer).toHaveBeenCalledExactlyOnceWith({
+      toolCallId,
+      goalId: goals[1].id,
+      label: 'Lose weight',
+    });
+    expect(screen.getByRole('button', { name: /Get energized/ })).toBeDisabled();
   });
 });
