@@ -16,7 +16,7 @@ const ScoreBar = ({ side, score }: ScoreBarProps) => (
     <span className="w-3 font-mono text-[0.65rem] text-muted-foreground">{side}</span>
     <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
       <motion.div
-        className={`h-full rounded-full ${side === 'A' ? 'bg-brand' : 'bg-brand-alt'}`}
+        className={`h-full rounded-full ${side === 'A' ? 'bg-side-a' : 'bg-side-b'}`}
         initial={{ width: 0 }}
         animate={{ width: `${scorePercent(score)}%` }}
         transition={{ duration: BAR_DURATION_S, ease: 'easeOut' }}
