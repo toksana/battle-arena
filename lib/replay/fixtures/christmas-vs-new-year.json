@@ -1,0 +1,337 @@
+{
+  "presetId": "christmas-vs-new-year",
+  "clarification": {
+    "question": "What should Christmas vs. New Year optimize for?",
+    "goals": [
+      {
+        "id": "budget",
+        "label": "Save money",
+        "emoji": "💰",
+        "hint": "Lowest overall spending on the celebration"
+      },
+      {
+        "id": "family-time",
+        "label": "Family time",
+        "emoji": "👨‍👩‍👧",
+        "hint": "Most quality time with loved ones"
+      },
+      {
+        "id": "fun-party",
+        "label": "Fun & festivities",
+        "emoji": "🎉",
+        "hint": "Most exciting atmosphere and social energy"
+      }
+    ]
+  },
+  "comparisons": [
+    {
+      "goalId": "budget",
+      "comparison": {
+        "isRelevant": true,
+        "fallbackReason": null,
+        "title": "Christmas vs. New Year",
+        "goal": "Save money",
+        "options": [
+          {
+            "name": "Christmas",
+            "emoji": "🎄",
+            "tagline": "Cozy, gift-driven family gathering",
+            "metrics": [
+              {
+                "label": "Gift spending",
+                "value": "~high"
+              },
+              {
+                "label": "Travel cost",
+                "value": "~moderate"
+              },
+              {
+                "label": "Venue cost",
+                "value": "~low at home"
+              }
+            ],
+            "pros": [
+              "Home dinners are cheap to host",
+              "Many free traditions and decorations",
+              "Often shared among family"
+            ],
+            "cons": [
+              "Gift expectations drive up spending",
+              "Holiday travel prices peak",
+              "Shops and restaurants are pricier"
+            ]
+          },
+          {
+            "name": "New Year",
+            "emoji": "🎆",
+            "tagline": "Party-focused night out or at-home countdown",
+            "metrics": [
+              {
+                "label": "Gift spending",
+                "value": "~low"
+              },
+              {
+                "label": "Travel cost",
+                "value": "~moderate"
+              },
+              {
+                "label": "Venue cost",
+                "value": "~high if out"
+              }
+            ],
+            "pros": [
+              "Little or no gift obligation",
+              "Free fireworks and public countdowns",
+              "Easy to keep it simple at home"
+            ],
+            "cons": [
+              "Nights out and tickets can be expensive",
+              "Drinks and cover charges add up",
+              "Venue prices spike on Dec 31"
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "label": "Gifts",
+            "defaultWeight": 5,
+            "scoreA": 3,
+            "scoreB": 8,
+            "rationale": "Christmas expects gifts; New Year rarely does"
+          },
+          {
+            "label": "Hosting cost",
+            "defaultWeight": 4,
+            "scoreA": 8,
+            "scoreB": 6,
+            "rationale": "Home Christmas meals are cheap; NYE parties cost more"
+          },
+          {
+            "label": "Going out",
+            "defaultWeight": 3,
+            "scoreA": 6,
+            "scoreB": 4,
+            "rationale": "NYE nights out carry premium prices"
+          },
+          {
+            "label": "Free events",
+            "defaultWeight": 2,
+            "scoreA": 5,
+            "scoreB": 8,
+            "rationale": "Public fireworks and countdowns are free for NYE"
+          }
+        ],
+        "verdict": {
+          "summary": "New Year is the cheaper pick since it carries little gift pressure and offers free fireworks. Keep it at home to avoid Dec 31 venue premiums.",
+          "confidence": "medium"
+        }
+      }
+    },
+    {
+      "goalId": "family-time",
+      "comparison": {
+        "isRelevant": true,
+        "fallbackReason": null,
+        "title": "Christmas vs. New Year",
+        "goal": "Family time",
+        "options": [
+          {
+            "name": "Christmas",
+            "emoji": "🎄",
+            "tagline": "Traditional, home-centered gathering with family",
+            "metrics": [
+              {
+                "label": "Typical length",
+                "value": "~1-2 days"
+              },
+              {
+                "label": "Travel need",
+                "value": "Often high"
+              },
+              {
+                "label": "Tradition",
+                "value": "Strong"
+              }
+            ],
+            "pros": [
+              "Strong family traditions and rituals",
+              "Multi-generational gatherings are common",
+              "Relaxed, unhurried time together"
+            ],
+            "cons": [
+              "Many people travel, adding stress",
+              "Shops and services often closed",
+              "Gift expectations can add pressure"
+            ]
+          },
+          {
+            "name": "New Year",
+            "emoji": "🎆",
+            "tagline": "Late-night countdown, often with friends",
+            "metrics": [
+              {
+                "label": "Typical length",
+                "value": "~1 evening"
+              },
+              {
+                "label": "Travel need",
+                "value": "Low to medium"
+              },
+              {
+                "label": "Tradition",
+                "value": "Moderate"
+              }
+            ],
+            "pros": [
+              "Easy to host at home in a relaxed way",
+              "Less gift pressure than Christmas",
+              "Good for mixing family with close friends"
+            ],
+            "cons": [
+              "Late nights can limit quality time",
+              "Family members may split off to parties",
+              "Shorter, more fragmented time together"
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "label": "Quality time",
+            "defaultWeight": 5,
+            "scoreA": 9,
+            "scoreB": 6,
+            "rationale": "Christmas offers longer, unhurried time together"
+          },
+          {
+            "label": "Tradition",
+            "defaultWeight": 4,
+            "scoreA": 9,
+            "scoreB": 6,
+            "rationale": "Christmas rituals bond families across generations"
+          },
+          {
+            "label": "Stress level",
+            "defaultWeight": 3,
+            "scoreA": 5,
+            "scoreB": 7,
+            "rationale": "Christmas brings travel and gift pressure; New Year is lighter"
+          },
+          {
+            "label": "Togetherness",
+            "defaultWeight": 4,
+            "scoreA": 8,
+            "scoreB": 6,
+            "rationale": "New Year evenings can fragment as people split off"
+          }
+        ],
+        "verdict": {
+          "summary": "For family time, Christmas wins thanks to longer, traditional time together. New Year works well as a lighter add-on if you want a relaxed evening with close people.",
+          "confidence": "high"
+        }
+      }
+    },
+    {
+      "goalId": "fun-party",
+      "comparison": {
+        "isRelevant": true,
+        "fallbackReason": null,
+        "title": "Christmas vs. New Year",
+        "goal": "Fun & festivities",
+        "options": [
+          {
+            "name": "Christmas",
+            "emoji": "🎄",
+            "tagline": "Cozy, festive and family-centered",
+            "metrics": [
+              {
+                "label": "Vibe",
+                "value": "Warm & cozy"
+              },
+              {
+                "label": "Crowds",
+                "value": "Mostly private"
+              },
+              {
+                "label": "Typical spend",
+                "value": "~moderate"
+              }
+            ],
+            "pros": [
+              "Festive decorations and lights everywhere",
+              "Gift-giving adds excitement",
+              "Strong tradition and nostalgia"
+            ],
+            "cons": [
+              "Many venues and shops closed",
+              "Parties are often smaller and private",
+              "Can feel subdued for big nightlife"
+            ]
+          },
+          {
+            "name": "New Year",
+            "emoji": "🎆",
+            "tagline": "Loud, social and countdown-driven",
+            "metrics": [
+              {
+                "label": "Vibe",
+                "value": "Electric & social"
+              },
+              {
+                "label": "Crowds",
+                "value": "Large events"
+              },
+              {
+                "label": "Typical spend",
+                "value": "~higher"
+              }
+            ],
+            "pros": [
+              "Big parties, fireworks and countdowns",
+              "Easy to go out and meet people",
+              "Built-in midnight climax"
+            ],
+            "cons": [
+              "Expensive tickets and venues",
+              "Crowded streets and transport",
+              "Can be pricey or chaotic"
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "label": "Party energy",
+            "defaultWeight": 5,
+            "scoreA": 5,
+            "scoreB": 10,
+            "rationale": "New Year's countdowns and big parties beat a quieter Christmas"
+          },
+          {
+            "label": "Social scene",
+            "defaultWeight": 4,
+            "scoreA": 5,
+            "scoreB": 9,
+            "rationale": "New Year offers far more public gatherings to join"
+          },
+          {
+            "label": "Festive spirit",
+            "defaultWeight": 4,
+            "scoreA": 10,
+            "scoreB": 6,
+            "rationale": "Christmas decor, music and gift excitement are unmatched"
+          },
+          {
+            "label": "Cost to enjoy",
+            "defaultWeight": 2,
+            "scoreA": 7,
+            "scoreB": 4,
+            "rationale": "Christmas is usually cheaper than pricey New Year events"
+          }
+        ],
+        "verdict": {
+          "summary": "For maximum fun and festivities, New Year's Eve wins with its countdowns, fireworks and big social scene. Choose Christmas if you prefer a cozier, more festive atmosphere.",
+          "confidence": "medium"
+        }
+      }
+    }
+  ]
+}

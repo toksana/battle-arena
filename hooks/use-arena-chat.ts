@@ -10,11 +10,17 @@ import {
 } from '@/lib/ai/continuation';
 import type { ArenaUIMessage, GoalAnswer } from '@/lib/ai/messages';
 import { isChatBusy } from '@/lib/chat-status';
+import type { Preset } from '@/lib/presets';
+import { hasReplay } from '@/lib/replay/registry';
+import { createArenaTransport } from '@/lib/replay/transport';
 
 const CHAT_API = '/api/chat';
 
-/** Created once: the transport is stateless, so every render can share it. */
-const transport = new DefaultChatTransport<ArenaUIMessage>({ api: CHAT_API });
+/**
+ * Created once and shared by every render: live battles go to the API, pre-rendered preset
+ * battles replay their recording client-side.
+ */
+const transport = createArenaTransport(new DefaultChatTransport<ArenaUIMessage>({ api: CHAT_API }));
 
 /**
  * One battle at a time: each new dilemma starts a fresh history, so the model never
@@ -29,6 +35,14 @@ export const useArenaChat = () => {
   const startBattle = (prompt: string) => {
     chat.setMessages([]);
     void chat.sendMessage({ text: prompt });
+  };
+
+  /** Plays a preset's recorded battle: same cards, no API call, so it works while rate limited. */
+  const startReplay = (preset: Preset) => {
+    if (!hasReplay(preset.id)) return;
+    chat.clearError();
+    chat.setMessages([]);
+    void chat.sendMessage({ text: preset.prompt, metadata: { replayPresetId: preset.id } });
   };
 
   /** The pick becomes the tool output; sendAutomaticallyWhen then requests the comparison. */
@@ -55,6 +69,7 @@ export const useArenaChat = () => {
     hasFailed: chat.error !== undefined || hasFailedTool(chat.messages),
     isBusy: isChatBusy(chat.status),
     startBattle,
+    startReplay,
     answerClarification,
     retry,
   };

@@ -5,7 +5,7 @@ export interface Preset {
   prompt: string;
 }
 
-export const PRESETS: readonly Preset[] = [
+export const PRESETS = [
   {
     id: 'coffee-vs-smoothie',
     label: 'Coffee vs. Smoothie',
@@ -30,4 +30,7 @@ export const PRESETS: readonly Preset[] = [
     emoji: '🧠',
     prompt: 'Building AI agents: Python vs. TypeScript',
   },
-];
+] as const satisfies readonly Preset[];
+
+/** Ids of the built-in presets; each one has a recorded battle for replay. */
+export type PresetId = (typeof PRESETS)[number]['id'];

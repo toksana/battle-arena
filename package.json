@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "format": "prettier --write \"**/*.{ts,tsx,mjs,json,css}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,mjs,json,css}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,mts,mjs,json,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,mts,mjs,json,css}\"",
     "test": "vitest run",
     "test:watch": "vitest"
   },

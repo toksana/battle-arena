@@ -6,7 +6,7 @@ import type { ArenaUIMessage } from '@/lib/ai/messages';
 import { makeComparison } from '@/test/factories';
 import { makeComparisonMessage, makeUserMessage } from '@/test/messages';
 
-import { BattleView } from './battle-view';
+import { BattleView, PRE_RENDERED_LABEL } from './battle-view';
 
 const assistant = (parts: ArenaUIMessage['parts']): ArenaUIMessage => ({
   id: faker.string.uuid(),
@@ -153,5 +153,24 @@ describe('BattleView', () => {
     // Assert
     expect(onPickPrompt).toHaveBeenCalledExactlyOnceWith(prompts[1]);
     expect(screen.getByRole('button', { name: prompts[0] })).toBeDisabled();
+  });
+
+  it('marks a replayed battle as pre-rendered', () => {
+    // Arrange
+    const dilemma = { ...makeUserMessage(), metadata: { replayPresetId: 'coffee-vs-smoothie' } };
+
+    // Act
+    render(<BattleView messages={[dilemma]} />);
+
+    // Assert
+    expect(screen.getByText(PRE_RENDERED_LABEL)).toBeInTheDocument();
+  });
+
+  it('does not mark a live battle', () => {
+    // Act
+    render(<BattleView messages={[makeUserMessage()]} />);
+
+    // Assert
+    expect(screen.queryByText(PRE_RENDERED_LABEL)).toBeNull();
   });
 });

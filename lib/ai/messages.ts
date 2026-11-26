@@ -5,6 +5,8 @@ import type { ClarificationAnswer } from './schemas';
 import type { ArenaToolName, ArenaTools } from './tools';
 
 export const MessageMetadataSchema = z.object({
+  /** Set on the user message of a pre-rendered battle; the client replays it, no API call. */
+  replayPresetId: z.string().optional(),
   model: z.string().optional(),
   inputTokens: z.number().optional(),
   outputTokens: z.number().optional(),
