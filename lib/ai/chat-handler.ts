@@ -6,7 +6,10 @@ import {
   type LanguageModel,
 } from 'ai';
 
-import type { MessageMetadata } from './messages';
+import { type RateLimitedBody, retryAfterSeconds } from '@/lib/api-errors';
+import { type RateLimiter, allowAll, clientKey } from '@/lib/rate-limit';
+
+import type { ArenaUIMessage, MessageMetadata } from './messages';
 import { prepareMessages, wrapUserMessages } from './prepare-messages';
 import { SYSTEM_PROMPT } from './system-prompt';
 import { tools } from './tools';
@@ -17,6 +20,9 @@ interface ChatHandlerOptions {
   model: LanguageModel;
   /** Shown in message metadata (future Agent Inspector). */
   modelId: string;
+  /** Checked before anything else, so over-limit requests never reach the model. */
+  rateLimit?: RateLimiter;
+  now?: () => number;
 }
 
 const readJson = async (req: Request): Promise<unknown> => {
@@ -63,30 +69,51 @@ const logStreamError = (error: unknown): string => {
   return FRIENDLY_STREAM_ERROR;
 };
 
+const tooManyRequests = (resetAt: number, now: number): Response => {
+  const body: RateLimitedBody = { error: 'rate_limited', resetAt };
+  return Response.json(body, {
+    status: 429,
+    headers: { 'Retry-After': String(retryAfterSeconds(resetAt, now)) },
+  });
+};
+
+interface BattleStreamOptions {
+  model: LanguageModel;
+  modelId: string;
+  messages: ArenaUIMessage[];
+}
+
+const streamBattle = async ({ model, modelId, messages }: BattleStreamOptions) => {
+  const result = streamText({
+    model,
+    instructions: SYSTEM_PROMPT,
+    messages: await convertToModelMessages(wrapUserMessages(messages)),
+    tools,
+    // Every route is a tool call, so the model has no channel to narrate its reasoning.
+    toolChoice: 'required',
+    // A comparison card needs no chain of thought; skipping it cuts time to first token.
+    reasoning: 'none',
+  });
+
+  return createUIMessageStreamResponse({
+    stream: toUIMessageStream({
+      stream: result.stream.pipeThrough(dropCustomParts()),
+      originalMessages: messages,
+      messageMetadata: metadataFor(modelId),
+      sendReasoning: false,
+      onError: logStreamError,
+    }),
+  });
+};
+
 export const createChatHandler =
-  ({ model, modelId }: ChatHandlerOptions) =>
+  ({ model, modelId, rateLimit = allowAll, now = Date.now }: ChatHandlerOptions) =>
   async (req: Request): Promise<Response> => {
+    const limit = await rateLimit(clientKey(req.headers));
+    if (!limit.allowed) return tooManyRequests(limit.resetAt, now());
+
     const prepared = await prepareMessages(messagesOf(await readJson(req)));
     if (!prepared.ok) return Response.json({ error: prepared.error }, { status: 400 });
 
-    const result = streamText({
-      model,
-      instructions: SYSTEM_PROMPT,
-      messages: await convertToModelMessages(wrapUserMessages(prepared.messages)),
-      tools,
-      // Every route is a tool call, so the model has no channel to narrate its reasoning.
-      toolChoice: 'required',
-      // A comparison card needs no chain of thought; skipping it cuts time to first token.
-      reasoning: 'none',
-    });
-
-    return createUIMessageStreamResponse({
-      stream: toUIMessageStream({
-        stream: result.stream.pipeThrough(dropCustomParts()),
-        originalMessages: prepared.messages,
-        messageMetadata: metadataFor(modelId),
-        sendReasoning: false,
-        onError: logStreamError,
-      }),
-    });
+    return streamBattle({ model, modelId, messages: prepared.messages });
   };

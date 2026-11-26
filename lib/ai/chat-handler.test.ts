@@ -50,10 +50,10 @@ const failingModel = () =>
     },
   });
 
-const post = (body: unknown): Request =>
+const post = (body: unknown, headers: Record<string, string> = {}): Request =>
   new Request('http://localhost/api/chat', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...headers },
     body: typeof body === 'string' ? body : JSON.stringify(body),
   });
 
@@ -179,5 +179,63 @@ describe('createChatHandler', () => {
     // Assert
     expect(body).toContain(FRIENDLY_STREAM_ERROR);
     expect(body).not.toContain('secret-internal-detail');
+  });
+
+  describe('rate limit', () => {
+    it('rejects an over-limit client with 429 before calling the model', async () => {
+      // Arrange
+      const now = faker.date.recent().getTime();
+      const resetAt = now + 90_500;
+      const ip = faker.internet.ip();
+      const rateLimit = vi.fn(async () => ({ allowed: false, resetAt }));
+      const model = comparisonModel('{}');
+      const handler = createChatHandler({ model, modelId: 'mock', rateLimit, now: () => now });
+
+      // Act
+      const response = await handler(post({ messages: [makeUserMessage()] }, { 'x-real-ip': ip }));
+
+      // Assert
+      expect(response.status).toBe(429);
+      expect(response.headers.get('Retry-After')).toBe('91');
+      expect(await response.json()).toEqual({ error: 'rate_limited', resetAt });
+      expect(rateLimit).toHaveBeenCalledExactlyOnceWith(ip);
+      expect(model.doStreamCalls).toHaveLength(0);
+    });
+
+    it('counts invalid requests too, so malformed spam is limited', async () => {
+      // Arrange
+      const rateLimit = vi.fn(async () => ({ allowed: true, resetAt: 0 }));
+      const handler = createChatHandler({
+        model: comparisonModel('{}'),
+        modelId: 'mock',
+        rateLimit,
+      });
+
+      // Act
+      const response = await handler(post('{not json'));
+
+      // Assert
+      expect(response.status).toBe(400);
+      expect(rateLimit).toHaveBeenCalledOnce();
+    });
+
+    it('streams normally when the client is within the limit', async () => {
+      // Arrange
+      const rateLimit = vi.fn(async () => ({ allowed: true, resetAt: 0 }));
+      const handler = createChatHandler({
+        model: comparisonModel(JSON.stringify(makeComparison())),
+        modelId: 'mock',
+        rateLimit,
+      });
+
+      // Act
+      const response = await handler(post({ messages: [makeUserMessage()] }));
+
+      // Assert
+      expect(response.status).toBe(200);
+      expect(await readChunks(response)).toContainEqual(
+        expect.objectContaining({ type: 'tool-input-available' }),
+      );
+    });
   });
 });
