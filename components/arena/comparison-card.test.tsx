@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { makeComparison, makeCriterion } from '@/test/factories';
 
 import { CONFIDENCE_LABEL, ComparisonCard } from './comparison-card';
+import { LEADING_LABEL } from './option-card';
 
 describe('ComparisonCard', () => {
   it('renders both options with their pros, cons and metrics', () => {
@@ -91,5 +92,66 @@ describe('ComparisonCard', () => {
     expect(screen.getByText(comparison.fallbackReason)).toBeInTheDocument();
     expect(screen.queryByText(comparison.options[0].name)).toBeNull();
     expect(screen.queryByText(comparison.verdict.summary)).toBeNull();
+  });
+
+  describe('scores and leader', () => {
+    /** A wins on the model's default weights: 58 vs 42. */
+    const closeBattle = () =>
+      makeComparison({
+        criteria: [
+          makeCriterion({ scoreA: 10, scoreB: 0, defaultWeight: 3 }),
+          makeCriterion({ scoreA: 0, scoreB: 10, defaultWeight: 2 }),
+          makeCriterion({ scoreA: 5, scoreB: 5, defaultWeight: 1 }),
+        ],
+      });
+
+    const optionRegion = (comparison: ReturnType<typeof makeComparison>, index: number) =>
+      screen.getByRole('region', { name: comparison.options[index].name });
+
+    it('highlights the leader with its score once streaming ends', () => {
+      // Arrange
+      const comparison = closeBattle();
+
+      // Act
+      render(<ComparisonCard input={comparison} isStreaming={false} />);
+
+      // Assert
+      const [a, b] = [optionRegion(comparison, 0), optionRegion(comparison, 1)];
+      expect(a).toHaveAttribute('data-leader', 'true');
+      expect(within(a).getByText(LEADING_LABEL)).toBeInTheDocument();
+      expect(within(a).getByText('Score 58 of 100')).toBeInTheDocument();
+      expect(b).not.toHaveAttribute('data-leader');
+      expect(within(b).getByText('Score 42 of 100')).toBeInTheDocument();
+    });
+
+    it('leaves both options neutral on a tie', () => {
+      // Arrange
+      const comparison = makeComparison({
+        criteria: [
+          makeCriterion({ scoreA: 6, scoreB: 6 }),
+          makeCriterion({ scoreA: 3, scoreB: 3 }),
+        ],
+      });
+
+      // Act
+      render(<ComparisonCard input={comparison} isStreaming={false} />);
+
+      // Assert
+      expect(screen.queryByText(LEADING_LABEL)).toBeNull();
+      expect(optionRegion(comparison, 0)).not.toHaveAttribute('data-leader');
+      expect(optionRegion(comparison, 1)).not.toHaveAttribute('data-leader');
+    });
+
+    it('shows no scores while streaming', () => {
+      // Arrange
+      const comparison = closeBattle();
+
+      // Act
+      render(<ComparisonCard input={comparison} isStreaming />);
+
+      // Assert
+      expect(screen.queryByText(/^Score \d+ of 100$/)).toBeNull();
+      expect(screen.queryByText(LEADING_LABEL)).toBeNull();
+    });
   });
 });

@@ -2,7 +2,8 @@ import type { DeepPartial } from 'ai';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Comparison } from '@/lib/ai/schemas';
-import { isCriterionReady, presentItems } from '@/lib/comparison-view';
+import { type ReadyCriterion, isCriterionReady, presentItems } from '@/lib/comparison-view';
+import { type Leader, type Scores, computeScores, pickLeader } from '@/lib/scoring';
 
 import { CriterionBar } from './criterion-bar';
 import { OptionCard } from './option-card';
@@ -34,24 +35,44 @@ const CardHeader = ({ input, isStreaming }: ComparisonCardProps) => (
   </header>
 );
 
-const OptionsGrid = ({ input, isStreaming }: ComparisonCardProps) => {
+interface OptionsGridProps extends ComparisonCardProps {
+  scores?: Scores;
+  leader: Leader;
+}
+
+const OptionsGrid = ({ input, isStreaming, scores, leader }: OptionsGridProps) => {
   const [a, b] = input?.options ?? [];
   return (
     <div className="relative grid grid-cols-1 gap-3 md:grid-cols-2">
-      <OptionCard option={a} side="A" isStreaming={isStreaming} />
+      <OptionCard
+        option={a}
+        side="A"
+        isStreaming={isStreaming}
+        score={scores?.a}
+        isLeader={leader === 'a'}
+      />
       <span
         aria-hidden
         className="z-10 mx-auto -my-5 grid size-9 place-items-center rounded-full border border-border bg-background font-mono text-xs font-semibold md:absolute md:top-6 md:left-1/2 md:m-0 md:-translate-x-1/2"
       >
         VS
       </span>
-      <OptionCard option={b} side="B" isStreaming={isStreaming} />
+      <OptionCard
+        option={b}
+        side="B"
+        isStreaming={isStreaming}
+        score={scores?.b}
+        isLeader={leader === 'b'}
+      />
     </div>
   );
 };
 
-const Criteria = ({ input, isStreaming }: ComparisonCardProps) => {
-  const ready = presentItems(input?.criteria).filter(isCriterionReady);
+interface CriteriaProps extends ComparisonCardProps {
+  ready: readonly ReadyCriterion[];
+}
+
+const Criteria = ({ input, isStreaming, ready }: CriteriaProps) => {
   if (ready.length === 0 && !isStreaming) return null;
   return (
     <section
@@ -98,18 +119,30 @@ const IrrelevantNotice = ({ input, isStreaming }: ComparisonCardProps) => {
   );
 };
 
+/** Scores and the leader appear once streaming ends, weighted by the model defaults. */
+const Battle = ({ input, isStreaming }: ComparisonCardProps) => {
+  const ready = presentItems(input?.criteria).filter(isCriterionReady);
+  const weights = ready.map((criterion) => criterion.defaultWeight);
+  const scores = isStreaming || ready.length === 0 ? undefined : computeScores(ready, weights);
+  const leader = scores ? pickLeader(scores) : null;
+
+  return (
+    <>
+      <CardHeader input={input} isStreaming={isStreaming} />
+      <OptionsGrid input={input} isStreaming={isStreaming} scores={scores} leader={leader} />
+      <Criteria input={input} isStreaming={isStreaming} ready={ready} />
+      <Verdict verdict={input?.verdict} />
+    </>
+  );
+};
+
 /** Renders the comparison progressively: each field appears as soon as it streams in. */
 export const ComparisonCard = ({ input, isStreaming }: ComparisonCardProps) => (
   <article aria-label="Comparison" aria-busy={isStreaming} className="flex flex-col gap-3">
     {input?.isRelevant === false ? (
       <IrrelevantNotice input={input} isStreaming={isStreaming} />
     ) : (
-      <>
-        <CardHeader input={input} isStreaming={isStreaming} />
-        <OptionsGrid input={input} isStreaming={isStreaming} />
-        <Criteria input={input} isStreaming={isStreaming} />
-        <Verdict verdict={input?.verdict} />
-      </>
+      <Battle input={input} isStreaming={isStreaming} />
     )}
   </article>
 );
