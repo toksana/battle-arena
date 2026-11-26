@@ -1,8 +1,9 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
+import { DefaultChatTransport } from 'ai';
 
+import { shouldContinueAfterClarification } from '@/lib/ai/continuation';
 import type { ArenaUIMessage } from '@/lib/ai/messages';
 import { isChatBusy } from '@/lib/chat-status';
 
@@ -18,7 +19,7 @@ const transport = new DefaultChatTransport<ArenaUIMessage>({ api: CHAT_API });
 export const useArenaChat = () => {
   const chat = useChat<ArenaUIMessage>({
     transport,
-    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+    sendAutomaticallyWhen: shouldContinueAfterClarification,
   });
 
   const startBattle = (prompt: string) => {
