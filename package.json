@@ -17,6 +17,7 @@
     "@ai-sdk/react": "^4.0.186",
     "@upstash/ratelimit": "^2.2.2",
     "@upstash/redis": "^1.41.1",
+    "@vercel/analytics": "^2.0.1",
     "ai": "^7.0.181",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
