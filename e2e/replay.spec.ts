@@ -44,22 +44,29 @@ test.describe('rate limited arena', () => {
         /Score \d+ of 100/,
       );
     }
-    await expect(card.getByText(recorded.verdict.summary)).toBeVisible();
+    await expect(card.getByText(recorded.scene)).toBeVisible();
+    await expect(card.getByRole('region', { name: 'Verdict' })).toBeVisible();
     await expect(
       page.getByRole('region', { name: 'Choose a goal' }).getByRole('button', { pressed: true }),
     ).toContainText(goal.label);
     expect(api.calls()).toBe(1);
   });
 
-  test('re-weighing a criterion moves the lead to the other option', async ({ page }) => {
+  test('re-weighing a criterion moves the lead and the verdict to the other option', async ({
+    page,
+  }) => {
     const change = findLeadChange(recorded.criteria);
     if (change === null) return test.skip(true, 'the recording has no single-slider lead change');
     const { card } = await replayCoffeeBattle(page);
     const leaderName = (side: 'a' | 'b' | null) => recorded.options[side === 'a' ? 0 : 1].name;
+    const verdictLine = (side: 'a' | 'b' | null) =>
+      side === 'a' ? recorded.verdict.ifA.line : recorded.verdict.ifB.line;
+    const verdict = card.getByRole('region', { name: 'Verdict' });
 
     await expect(card.locator('section[data-leader="true"]')).toHaveAccessibleName(
       leaderName(change.from),
     );
+    await expect(verdict).toContainText(verdictLine(change.from));
     await card.getByRole('button', { name: 'Adjust weights' }).click();
     const slider = card.getByRole('slider', { name: `${change.criterion.label} weight` });
     await slider.focus();
@@ -68,6 +75,7 @@ test.describe('rate limited arena', () => {
     await expect(card.locator('section[data-leader="true"]')).toHaveAccessibleName(
       leaderName(change.to),
     );
+    await expect(verdict).toContainText(verdictLine(change.to));
     await card.getByRole('button', { name: 'Reset weights' }).click();
     await expect(card.locator('section[data-leader="true"]')).toHaveAccessibleName(
       leaderName(change.from),

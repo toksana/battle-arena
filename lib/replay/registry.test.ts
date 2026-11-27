@@ -5,8 +5,7 @@ import { PRESETS } from '@/lib/presets';
 import { hasReplay, loadReplay } from './registry';
 
 describe('preset replays', () => {
-  // TODO(spicy-cards): un-skip once the fixtures are re-recorded for the new ComparisonSchema.
-  it.skip.each(PRESETS.map((preset) => [preset.id, preset] as const))(
+  it.each(PRESETS.map((preset) => [preset.id, preset] as const))(
     '%s has a valid recording with one comparison per goal',
     async (id) => {
       // Act
