@@ -10,6 +10,10 @@ import { z } from 'zod';
  */
 
 export const OPTION_COUNT = 2;
+export const MIN_STATS = 2;
+export const MAX_STATS = 4;
+/** Exactly this many pros and this many cons per option: a screenshot must read in a second. */
+export const PRO_CON_COUNT = 2;
 export const GOAL_COUNT = 3;
 export const MIN_CRITERIA = 3;
 export const MAX_CRITERIA = 4;
@@ -48,21 +52,42 @@ const score = (side: 'A' | 'B') =>
     .max(MAX_SCORE)
     .describe(`How well option ${side} satisfies this criterion, ${MIN_SCORE}–${MAX_SCORE}.`);
 
-export const MetricSchema = z.object({
-  label: text(20, 'Short metric name, e.g. "Calories" or "Latency".'),
+/** The number stays honest; the joke lives in the quip next to it. */
+export const StatSchema = z.object({
+  label: text(20, 'Short stat name, e.g. "Calories" or "Latency".'),
   value: text(
     24,
-    'A number with unit or a 1–2 word rating, e.g. "~120 kcal", "~300 ms", "Large". Never a list of names; put examples in pros or cons. Prefix estimates with ~.',
+    'An honest number with unit or a 1–2 word rating, e.g. "~120 kcal", "~300 ms", "Large". Never a list of names. Prefix estimates with ~. No jokes here.',
+  ),
+  quip: text(
+    40,
+    'A deadpan joke about this value that never contradicts it, e.g. "one gummy bear per flight", "technically cardio".',
   ),
 });
+
+const point = (kind: string) =>
+  text(
+    50,
+    `One ${kind}, at most 8 words, punchy and concrete. No hedging like "may" or "slightly".`,
+  );
+
+const points = (kind: string) =>
+  z.array(point(kind)).min(PRO_CON_COUNT).max(PRO_CON_COUNT).describe(`Exactly ${PRO_CON_COUNT}.`);
 
 export const OptionSchema = z.object({
   name: text(40, 'Option name.'),
   emoji: emoji(),
-  tagline: text(80, 'One-line characterization.'),
-  metrics: z.array(MetricSchema).max(4).describe('Up to 4 key quantitative facts.'),
-  pros: z.array(text(80, 'One advantage.')).min(1).max(4),
-  cons: z.array(text(80, 'One drawback.')).min(1).max(4),
+  nickname: text(
+    40,
+    'A wrestling-style nickname for this option, e.g. "The Free Gym Nobody Asked For". No quotes.',
+  ),
+  stats: z
+    .array(StatSchema)
+    .min(MIN_STATS)
+    .max(MAX_STATS)
+    .describe(`${MIN_STATS}–${MAX_STATS} key quantitative facts, each with a quip.`),
+  pros: points('advantage'),
+  cons: points('drawback'),
 });
 
 export const CriterionSchema = z.object({
@@ -141,7 +166,7 @@ export const FallbackChipsSchema = z.object({
     .max(FALLBACK_PROMPT_COUNT),
 });
 
-export type Metric = z.infer<typeof MetricSchema>;
+export type Stat = z.infer<typeof StatSchema>;
 export type Option = z.infer<typeof OptionSchema>;
 export type Criterion = z.infer<typeof CriterionSchema>;
 export type Comparison = z.infer<typeof ComparisonSchema>;

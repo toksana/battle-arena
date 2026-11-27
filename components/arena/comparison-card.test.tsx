@@ -22,7 +22,26 @@ describe('ComparisonCard', () => {
     expect(screen.queryByRole('heading', { level: 3, name: comparison.scene })).toBeNull();
   });
 
-  it('renders both options with their pros, cons and metrics', () => {
+  it('renders each option with its nickname and every stat next to its quip', () => {
+    // Arrange
+    const comparison = makeComparison();
+
+    // Act
+    render(<ComparisonCard input={comparison} isStreaming={false} />);
+
+    // Assert
+    comparison.options.forEach((option) => {
+      const region = within(screen.getByRole('region', { name: option.name }));
+      expect(region.getByText(`“${option.nickname}”`)).toBeInTheDocument();
+      option.stats.forEach((stat) => {
+        const row = region.getByText(`(${stat.quip})`).closest('div');
+        expect(row).toHaveTextContent(stat.label);
+        expect(row).toHaveTextContent(stat.value);
+      });
+    });
+  });
+
+  it('renders both options with their pros and cons', () => {
     // Arrange
     const comparison = makeComparison();
     const [a, b] = comparison.options;
@@ -39,7 +58,6 @@ describe('ComparisonCard', () => {
     expect(
       within(optionA.getByRole('list', { name: 'Cons' })).getAllByRole('listitem'),
     ).toHaveLength(a.cons.length);
-    a.metrics.forEach((metric) => expect(optionA.getByText(metric.value)).toBeInTheDocument());
   });
 
   it('renders one bar pair per criterion and the verdict with confidence', () => {

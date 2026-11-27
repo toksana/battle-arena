@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 
-import { makeComparison, makeCriterion, makeOption } from '@/test/factories';
+import { makeComparison, makeCriterion, makeOption, makeStat } from '@/test/factories';
 
 import {
   ClarificationSchema,
@@ -10,8 +10,11 @@ import {
   FallbackChipsSchema,
   MAX_CRITERIA,
   MAX_SCORE,
+  MAX_STATS,
   MAX_WEIGHT,
   MIN_CRITERIA,
+  MIN_STATS,
+  PRO_CON_COUNT,
   SCENE_LENGTH,
   hardLimit,
   softLimit,
@@ -88,6 +91,41 @@ describe('ComparisonSchema', () => {
     // Arrange
     const comparison = makeComparison({
       criteria: [makeCriterion(override), makeCriterion(), makeCriterion()],
+    });
+
+    // Act
+    const result = ComparisonSchema.safeParse(comparison);
+
+    // Assert
+    expect(result.error).toBeInstanceOf(z.ZodError);
+  });
+
+  it.each(['pros', 'cons'] as const)(`requires exactly ${PRO_CON_COUNT} %s per option`, (kind) => {
+    // Arrange
+    const withCount = (count: number) =>
+      makeComparison({
+        options: [
+          makeOption({ [kind]: faker.helpers.multiple(() => faker.lorem.word(), { count }) }),
+          makeOption(),
+        ],
+      });
+
+    // Act
+    const results = [PRO_CON_COUNT - 1, PRO_CON_COUNT, PRO_CON_COUNT + 1].map((count) =>
+      ComparisonSchema.safeParse(withCount(count)),
+    );
+
+    // Assert
+    expect(results.map((result) => result.success)).toEqual([false, true, false]);
+  });
+
+  it.each([MIN_STATS - 1, MAX_STATS + 1])('rejects %i stats', (count) => {
+    // Arrange
+    const comparison = makeComparison({
+      options: [
+        makeOption({ stats: faker.helpers.multiple(() => makeStat(), { count }) }),
+        makeOption(),
+      ],
     });
 
     // Act

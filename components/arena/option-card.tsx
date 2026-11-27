@@ -51,23 +51,27 @@ const OptionHeader = ({ option, side, isStreaming, score, isLeader }: OptionCard
     ) : (
       isStreaming && <Skeleton className="h-6 w-2/3" />
     )}
-    {option?.tagline ? (
-      <p className="text-muted-foreground">{option.tagline}</p>
+    {option?.nickname ? (
+      <p className="text-muted-foreground italic">“{option.nickname}”</p>
     ) : (
-      isStreaming && <Skeleton className="h-4 w-full" />
+      isStreaming && <Skeleton className="h-4 w-1/2" />
     )}
   </header>
 );
 
-const Metrics = ({ metrics }: { metrics: DeepPartial<Option>['metrics'] }) => {
-  const items = presentItems(metrics).filter((metric) => metric.label);
+/** One row per stat: the honest number in mono, the joke beside it in muted text. */
+const Stats = ({ stats }: { stats: DeepPartial<Option>['stats'] }) => {
+  const items = presentItems(stats).filter((stat) => stat.label);
   if (items.length === 0) return null;
   return (
-    <dl className="grid grid-cols-2 gap-2">
-      {items.map((metric, index) => (
-        <Reveal key={index} className="rounded-md bg-muted/40 px-2.5 py-1.5">
-          <dt className="text-[0.7rem] text-muted-foreground">{metric.label}</dt>
-          <dd className="font-mono text-xs">{metric.value}</dd>
+    <dl className="flex flex-col gap-1.5">
+      {items.map((stat, index) => (
+        <Reveal key={index} className="flex flex-wrap items-baseline gap-x-2">
+          <dt className="text-[0.7rem] text-muted-foreground">{stat.label}</dt>
+          <dd className="flex flex-wrap items-baseline gap-x-2">
+            <span className="font-mono text-xs">{stat.value}</span>
+            {stat.quip && <span className="text-xs text-muted-foreground">({stat.quip})</span>}
+          </dd>
         </Reveal>
       ))}
     </dl>
@@ -112,7 +116,7 @@ export const OptionCard = (props: OptionCardProps) => (
     )}
   >
     <OptionHeader {...props} />
-    <Metrics metrics={props.option?.metrics} />
+    <Stats stats={props.option?.stats} />
     <PointList label="Pros" points={props.option?.pros} tone="pro" />
     <PointList label="Cons" points={props.option?.cons} tone="con" />
   </section>

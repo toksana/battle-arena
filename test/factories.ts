@@ -8,9 +8,11 @@ import {
   MIN_SCORE,
   MIN_WEIGHT,
   OPTION_COUNT,
+  PRO_CON_COUNT,
   type Comparison,
   type Criterion,
   type Option,
+  type Stat,
 } from '@/lib/ai/schemas';
 
 const short = (max: number): string => faker.lorem.words(2).slice(0, max);
@@ -27,13 +29,27 @@ export const makeCriterion = (overrides: Partial<Criterion> = {}): Criterion => 
   ...overrides,
 });
 
+export const makeStat = (overrides: Partial<Stat> = {}): Stat => ({
+  label: short(20),
+  value: `~${faker.number.int(400)} kcal`,
+  quip: faker.lorem.words(3).slice(0, 40),
+  ...overrides,
+});
+
+/** Distinct texts: tests look points up by text, and lorem words repeat often. */
+const makePoints = (): string[] =>
+  faker.helpers.uniqueArray(() => faker.lorem.sentence(5).slice(0, 50), PRO_CON_COUNT);
+
 export const makeOption = (overrides: Partial<Option> = {}): Option => ({
   name: faker.commerce.product().slice(0, 40),
   emoji: '☕',
-  tagline: faker.lorem.sentence().slice(0, 80),
-  metrics: [{ label: 'Calories', value: `${faker.number.int(400)} kcal` }],
-  pros: [faker.lorem.sentence().slice(0, 80)],
-  cons: [faker.lorem.sentence().slice(0, 80)],
+  nickname: `The ${faker.word.adjective()} ${faker.word.noun()}`.slice(0, 40),
+  // Distinct quips so tests can find every stat by its quip.
+  stats: faker.helpers
+    .uniqueArray(() => faker.lorem.words(3).slice(0, 40), 2)
+    .map((quip) => makeStat({ quip })),
+  pros: makePoints(),
+  cons: makePoints(),
   ...overrides,
 });
 
