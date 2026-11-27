@@ -6,7 +6,7 @@ import { PreRenderedBadge } from './pre-rendered-badge';
 interface BattleViewProps {
   messages: readonly ArenaUIMessage[];
   onAnswer?: (answer: GoalAnswer) => void;
-  /** A suggested dilemma was picked; the arena puts it into the composer. */
+  /** A suggested dilemma was picked; the arena starts a battle with it right away. */
   onPickPrompt?: (prompt: string) => void;
   isBusy?: boolean;
 }

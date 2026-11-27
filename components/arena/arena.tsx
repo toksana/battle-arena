@@ -26,7 +26,8 @@ export const Arena = () => {
     retry,
   } = useArenaChat();
 
-  const handlePreset = (preset: Preset) => setPrompt(preset.prompt);
+  /** One click starts the battle; whatever the user typed stays in the composer. */
+  const handlePreset = (preset: Preset) => startBattle(preset.prompt);
 
   const handleSubmit = () => {
     startBattle(prompt);
@@ -54,7 +55,7 @@ export const Arena = () => {
           <BattleView
             messages={messages}
             onAnswer={answerClarification}
-            onPickPrompt={setPrompt}
+            onPickPrompt={startBattle}
             isBusy={isBusy}
           />
         )}

@@ -23,13 +23,12 @@ export const stubRateLimit = async (page: Page): Promise<{ calls: () => number }
   return { calls: () => calls };
 };
 
-/** Picks a preset in the hero row and sends it, like a visitor would. */
+/** Picks a preset in the hero row, which starts its battle right away. */
 export const startPresetBattle = async (page: Page, label: string): Promise<void> => {
   await page
     .getByRole('list', { name: 'Preset dilemmas' })
     .getByRole('button', { name: label })
     .click();
-  await page.getByRole('button', { name: 'Start battle' }).click();
 };
 
 export interface LeadChange {
