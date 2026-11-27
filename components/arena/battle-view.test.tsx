@@ -6,7 +6,8 @@ import type { ArenaUIMessage } from '@/lib/ai/messages';
 import { makeComparison } from '@/test/factories';
 import { makeComparisonMessage, makeUserMessage } from '@/test/messages';
 
-import { BattleView, PRE_RENDERED_LABEL } from './battle-view';
+import { BattleView } from './battle-view';
+import { PRE_RENDERED_LABEL } from './pre-rendered-badge';
 
 const assistant = (parts: ArenaUIMessage['parts']): ArenaUIMessage => ({
   id: faker.string.uuid(),
