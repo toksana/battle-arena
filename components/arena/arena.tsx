@@ -47,11 +47,7 @@ export const Arena = () => {
         <PresetChips presets={PRESETS} onSelect={handlePreset} disabled={isBusy} />
       </section>
       <section aria-label="Battle canvas" className="flex flex-1 flex-col gap-4">
-        {messages.length === 0 ? (
-          <div className="grid flex-1 place-items-center rounded-xl border border-dashed border-border bg-card/40 p-8 text-center text-muted-foreground">
-            <p className="font-mono text-xs">awaiting_dilemma…</p>
-          </div>
-        ) : (
+        {messages.length > 0 && (
           <BattleView
             messages={messages}
             onAnswer={answerClarification}
