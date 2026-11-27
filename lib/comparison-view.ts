@@ -12,9 +12,7 @@ export const scorePercent = (score: number): number => {
   return ((clamped - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)) * 100;
 };
 
-export type ReadyCriterion = Pick<Criterion, 'label' | 'defaultWeight' | 'scoreA' | 'scoreB'> & {
-  rationale?: string;
-};
+export type ReadyCriterion = Pick<Criterion, 'label' | 'defaultWeight' | 'scoreA' | 'scoreB'>;
 
 /** A criterion row can render once its label, default weight and both scores have streamed in. */
 export const isCriterionReady = (

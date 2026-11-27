@@ -8,8 +8,10 @@ import {
   ClarificationSchema,
   ComparisonSchema,
   FallbackChipsSchema,
+  MAX_CRITERIA,
   MAX_SCORE,
   MAX_WEIGHT,
+  MIN_CRITERIA,
   TITLE_LENGTH,
   hardLimit,
   softLimit,
@@ -63,7 +65,7 @@ describe('ComparisonSchema', () => {
     expect(result.error).toBeInstanceOf(z.ZodError);
   });
 
-  it.each([2, 6])('rejects %i criteria (3–5 required)', (count) => {
+  it.each([MIN_CRITERIA - 1, MAX_CRITERIA + 1])('rejects %i criteria', (count) => {
     // Arrange
     const comparison = makeComparison({
       criteria: faker.helpers.multiple(() => makeCriterion(), { count }),

@@ -66,7 +66,7 @@ describe('scorePercent', () => {
 });
 
 describe('isCriterionReady', () => {
-  it('accepts a criterion with label, weight and both scores, even without rationale', () => {
+  it('accepts a criterion with label, weight and both scores', () => {
     // Arrange
     const { label, defaultWeight, scoreA, scoreB } = makeCriterion();
 

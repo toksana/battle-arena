@@ -11,6 +11,8 @@ import { z } from 'zod';
 
 export const OPTION_COUNT = 2;
 export const GOAL_COUNT = 3;
+export const MIN_CRITERIA = 3;
+export const MAX_CRITERIA = 4;
 export const FALLBACK_PROMPT_COUNT = 3;
 export const MIN_WEIGHT = 1;
 export const MAX_WEIGHT = 5;
@@ -72,7 +74,6 @@ export const CriterionSchema = z.object({
     .describe(`Importance for the stated goal, ${MIN_WEIGHT}–${MAX_WEIGHT}.`),
   scoreA: score('A'),
   scoreB: score('B'),
-  rationale: text(100, 'Why the scores differ.'),
 });
 
 export const VerdictSchema = z.object({
@@ -93,7 +94,11 @@ export const ComparisonSchema = z.object({
     .min(OPTION_COUNT)
     .max(OPTION_COUNT)
     .describe('Exactly 2 options: index 0 is A, index 1 is B.'),
-  criteria: z.array(CriterionSchema).min(3).max(5).describe('3–5 criteria relevant to the goal.'),
+  criteria: z
+    .array(CriterionSchema)
+    .min(MIN_CRITERIA)
+    .max(MAX_CRITERIA)
+    .describe(`${MIN_CRITERIA}–${MAX_CRITERIA} criteria relevant to the goal.`),
   verdict: VerdictSchema,
 });
 

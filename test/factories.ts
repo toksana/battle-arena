@@ -2,7 +2,9 @@ import { faker } from '@faker-js/faker';
 
 import {
   MAX_SCORE,
+  MAX_CRITERIA,
   MAX_WEIGHT,
+  MIN_CRITERIA,
   MIN_SCORE,
   MIN_WEIGHT,
   OPTION_COUNT,
@@ -22,7 +24,6 @@ export const makeCriterion = (overrides: Partial<Criterion> = {}): Criterion => 
   defaultWeight: makeWeight(),
   scoreA: makeScore(),
   scoreB: makeScore(),
-  rationale: faker.lorem.sentence().slice(0, 100),
   ...overrides,
 });
 
@@ -45,7 +46,9 @@ export const makeComparison = (overrides: Partial<Comparison> = {}): Comparison 
   options: faker.helpers
     .uniqueArray(() => faker.commerce.product().slice(0, 40), OPTION_COUNT)
     .map((name) => makeOption({ name })),
-  criteria: faker.helpers.multiple(() => makeCriterion(), { count: { min: 3, max: 5 } }),
+  criteria: faker.helpers.multiple(() => makeCriterion(), {
+    count: { min: MIN_CRITERIA, max: MAX_CRITERIA },
+  }),
   verdict: { summary: faker.lorem.sentence().slice(0, 240), confidence: 'medium' },
   ...overrides,
 });
