@@ -11,10 +11,18 @@ interface MessagePartProps {
   onAnswer?: (answer: GoalAnswer) => void;
   onPickPrompt?: (prompt: string) => void;
   isBusy?: boolean;
+  /** A replayed battle: the clarification question carries the badge as the battle's title. */
+  isPreRendered?: boolean;
 }
 
 /** Routes each streamed part to its view. Everything renders as plain text, never as HTML. */
-export const MessagePart = ({ part, onAnswer, onPickPrompt, isBusy }: MessagePartProps) => {
+export const MessagePart = ({
+  part,
+  onAnswer,
+  onPickPrompt,
+  isBusy,
+  isPreRendered,
+}: MessagePartProps) => {
   // A failed tool call renders nothing: its input never passed validation, its error text can
   // hold validation details, and the arena shows a retry notice instead.
   if (isToolUIPart(part) && part.state === 'output-error') return null;
@@ -23,7 +31,14 @@ export const MessagePart = ({ part, onAnswer, onPickPrompt, isBusy }: MessagePar
     case 'text':
       return <p className="whitespace-pre-wrap">{part.text}</p>;
     case 'tool-askClarification':
-      return <ClarificationCard part={part} onAnswer={onAnswer} disabled={isBusy} />;
+      return (
+        <ClarificationCard
+          part={part}
+          onAnswer={onAnswer}
+          disabled={isBusy}
+          isPreRendered={isPreRendered}
+        />
+      );
     case 'tool-renderComparison':
       return <ComparisonCard input={part.input} isStreaming={part.state === 'input-streaming'} />;
     case 'tool-renderFallbackChips':

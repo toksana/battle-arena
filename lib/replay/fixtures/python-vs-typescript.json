@@ -4,299 +4,188 @@
     "question": "What should Python vs. TypeScript optimize for?",
     "goals": [
       {
-        "id": "ml-ecosystem",
-        "label": "Best AI tooling",
-        "emoji": "🧠",
-        "hint": "Richest libraries, models, and research support"
+        "id": "ship-fast",
+        "label": "Ship fast",
+        "emoji": "🚀",
+        "hint": "Fastest path from idea to working agent"
       },
       {
-        "id": "web-integration",
-        "label": "Ship to web apps",
-        "emoji": "🌐",
-        "hint": "Smooth integration with frontends and full-stack code"
-      },
-      {
-        "id": "production-scale",
-        "label": "Reliable at scale",
+        "id": "prod-scale",
+        "label": "Run in production",
         "emoji": "🏗️",
-        "hint": "Type safety, maintainability, and deployment ease"
+        "hint": "Reliability, typing, and maintainable code at scale"
+      },
+      {
+        "id": "ml-ecosystem",
+        "label": "Tap ML tooling",
+        "emoji": "🧠",
+        "hint": "Best libraries for models, data, and research"
       }
     ]
   },
   "comparisons": [
     {
-      "goalId": "ml-ecosystem",
+      "goalId": "ship-fast",
       "comparison": {
         "isRelevant": true,
         "fallbackReason": null,
-        "title": "Python vs. TypeScript",
-        "goal": "Best AI tooling",
+        "scene": "Monday, 9:02 AM. Demo is Friday. The agent has zero tools.",
+        "goal": "Ship fast",
         "options": [
           {
             "name": "Python",
             "emoji": "🐍",
-            "tagline": "The default language of AI research and tooling",
-            "metrics": [
+            "nickname": "The Swiss Army Knife With A Notebook Problem",
+            "stats": [
               {
-                "label": "Ecosystem",
-                "value": "Very large"
+                "label": "AI SDKs",
+                "value": "Most",
+                "quip": "every vendor ships Python first"
               },
               {
-                "label": "AI SDK depth",
-                "value": "Broadest"
+                "label": "Setup",
+                "value": "~5 min",
+                "quip": "pip install and pray it resolves"
               },
               {
                 "label": "Typing",
-                "value": "Optional"
+                "value": "Optional",
+                "quip": "hints are more like suggestions"
               }
             ],
-            "pros": [
-              "Most ML/AI libraries and first-party SDKs",
-              "Fastest access to new research and models",
-              "Strong data and evaluation tooling"
-            ],
-            "cons": ["Weaker typing and packaging story", "Harder to share code with web frontends"]
+            "pros": ["Every agent framework lands here first", "Huge pool of examples to copy"],
+            "cons": ["Packaging and venvs eat afternoons", "Runtime type errors show up in prod"]
           },
           {
             "name": "TypeScript",
             "emoji": "📘",
-            "tagline": "Strong choice for agents embedded in web products",
-            "metrics": [
+            "nickname": "The Tidy Suit That Still Needs Tailoring",
+            "stats": [
               {
-                "label": "Ecosystem",
-                "value": "Growing"
+                "label": "AI SDKs",
+                "value": "Good",
+                "quip": "solid, but usually second in line"
               },
               {
-                "label": "AI SDK depth",
-                "value": "Solid"
+                "label": "Setup",
+                "value": "~5 min",
+                "quip": "npm init and you're in business"
               },
               {
                 "label": "Typing",
-                "value": "Static"
+                "value": "Strict",
+                "quip": "the compiler argues back"
               }
             ],
             "pros": [
-              "Excellent type safety for agent tool schemas",
-              "Natural fit for full-stack and edge deployments",
-              "Official SDKs from major model providers"
+              "Strong types catch tool-call mistakes early",
+              "Natural fit for web frontends and APIs"
             ],
-            "cons": [
-              "Fewer ML and evaluation libraries",
-              "Less community material on advanced agent patterns"
-            ]
+            "cons": ["Fewer ML examples to borrow from", "Some newer AI features arrive late"]
           }
         ],
         "criteria": [
           {
-            "label": "Library breadth",
+            "label": "Examples",
             "defaultWeight": 5,
-            "scoreA": 10,
-            "scoreB": 6,
-            "rationale": "Python has the most AI and ML libraries available"
-          },
-          {
-            "label": "Model SDK support",
-            "defaultWeight": 4,
             "scoreA": 9,
-            "scoreB": 8,
-            "rationale": "Both have official provider SDKs; Python gets new features first"
+            "scoreB": 6
           },
           {
-            "label": "Typing & tool schemas",
-            "defaultWeight": 3,
-            "scoreA": 6,
-            "scoreB": 9,
-            "rationale": "TypeScript's static types make tool definitions safer"
+            "label": "Setup speed",
+            "defaultWeight": 4,
+            "scoreA": 7,
+            "scoreB": 8
+          },
+          {
+            "label": "Type safety",
+            "defaultWeight": 2,
+            "scoreA": 5,
+            "scoreB": 9
           },
           {
             "label": "Web integration",
             "defaultWeight": 3,
             "scoreA": 5,
-            "scoreB": 9,
-            "rationale": "TypeScript shares code with frontends and edge runtimes"
-          },
-          {
-            "label": "Research & examples",
-            "defaultWeight": 4,
-            "scoreA": 10,
-            "scoreB": 6,
-            "rationale": "Most papers, notebooks, and agent frameworks start in Python"
+            "scoreB": 9
           }
         ],
         "verdict": {
-          "summary": "For the broadest AI tooling and fastest access to new research, choose Python. Pick TypeScript only if the agent is tightly coupled to a web or edge product.",
-          "confidence": "high"
+          "ifA": {
+            "line": "Python wins the sprint: more examples, fewer blank pages.",
+            "plotTwist": "TypeScript wins if your agent lives inside a Next.js app already."
+          },
+          "ifB": {
+            "line": "TypeScript wins the sprint when your app is already JavaScript.",
+            "plotTwist": "Python wins if you need a library that only exists in its ecosystem."
+          }
         }
       }
     },
     {
-      "goalId": "web-integration",
+      "goalId": "prod-scale",
       "comparison": {
         "isRelevant": true,
         "fallbackReason": null,
-        "title": "Python vs. TypeScript",
-        "goal": "Ship to web apps",
+        "scene": "Monday, 9:02 AM. The agent just hallucinated a refund to a cat.",
+        "goal": "Run in production",
         "options": [
           {
             "name": "Python",
             "emoji": "🐍",
-            "tagline": "Richest AI/ML ecosystem, backend-first",
-            "metrics": [
+            "nickname": "The Duct Tape Cathedral",
+            "stats": [
               {
-                "label": "AI libraries",
-                "value": "Very large"
+                "label": "AI SDK support",
+                "value": "Best-in-class",
+                "quip": "every new library lands here first"
               },
               {
-                "label": "Web frameworks",
-                "value": "FastAPI, Django"
+                "label": "Type checking",
+                "value": "~Optional",
+                "quip": "hints are polite suggestions"
               },
               {
-                "label": "Frontend sharing",
-                "value": "Low"
+                "label": "Async agents",
+                "value": "Solid",
+                "quip": "asyncio has opinions"
               }
             ],
             "pros": [
-              "Most agent frameworks and SDKs ship Python first",
-              "Strong data and eval tooling",
-              "Simple syntax for prototyping"
+              "Richest agent and ML library ecosystem",
+              "Largest pool of agent examples online"
             ],
             "cons": [
-              "Separate language from most frontends",
-              "Weaker static typing by default",
-              "Needs an API layer to reach the browser"
+              "Runtime errors show up in production",
+              "Dependency management still feels like a hobby"
             ]
           },
           {
             "name": "TypeScript",
-            "emoji": "📘",
-            "tagline": "One language across frontend and backend",
-            "metrics": [
+            "emoji": "🔷",
+            "nickname": "The Bouncer With a Clipboard",
+            "stats": [
               {
-                "label": "AI libraries",
-                "value": "Growing"
+                "label": "AI SDK support",
+                "value": "Strong",
+                "quip": "official SDKs cover the big providers"
               },
               {
-                "label": "Web frameworks",
-                "value": "Next.js, Hono"
+                "label": "Type checking",
+                "value": "~Strict",
+                "quip": "catches the cat before the refund"
               },
               {
-                "label": "Frontend sharing",
-                "value": "High"
+                "label": "Async agents",
+                "value": "Native",
+                "quip": "promises were built for this"
               }
             ],
             "pros": [
-              "Shares types and code with React/Next.js frontends",
-              "Strong type safety for complex agent state",
-              "Good streaming support for chat UIs"
+              "Static types catch tool-call mistakes early",
+              "Same language for backend and frontend"
             ],
-            "cons": [
-              "Fewer cutting-edge research libraries",
-              "Some ML tooling is Python-only",
-              "Smaller agent-eval ecosystem"
-            ]
-          }
-        ],
-        "criteria": [
-          {
-            "label": "Frontend fit",
-            "defaultWeight": 5,
-            "scoreA": 4,
-            "scoreB": 9,
-            "rationale": "TypeScript shares code and types with web frontends directly"
-          },
-          {
-            "label": "AI libraries",
-            "defaultWeight": 4,
-            "scoreA": 9,
-            "scoreB": 6,
-            "rationale": "Python has more agent frameworks and ML tools"
-          },
-          {
-            "label": "Type safety",
-            "defaultWeight": 3,
-            "scoreA": 5,
-            "scoreB": 9,
-            "rationale": "TypeScript's static types help manage complex agent state"
-          },
-          {
-            "label": "Streaming UX",
-            "defaultWeight": 3,
-            "scoreA": 6,
-            "scoreB": 9,
-            "rationale": "TypeScript has strong SSE and streaming patterns for chat UIs"
-          }
-        ],
-        "verdict": {
-          "summary": "For shipping agents into web apps, TypeScript wins on frontend integration, typing, and streaming. Choose Python only if you rely on Python-first AI libraries or research tooling.",
-          "confidence": "high"
-        }
-      }
-    },
-    {
-      "goalId": "production-scale",
-      "comparison": {
-        "isRelevant": true,
-        "fallbackReason": "",
-        "title": "Python vs. TypeScript",
-        "goal": "Reliable at scale",
-        "options": [
-          {
-            "name": "Python",
-            "emoji": "🐍",
-            "tagline": "Dominant AI ecosystem with mature agent frameworks",
-            "metrics": [
-              {
-                "label": "AI libraries",
-                "value": "Very large"
-              },
-              {
-                "label": "Typing",
-                "value": "Optional"
-              },
-              {
-                "label": "Async model",
-                "value": "asyncio"
-              }
-            ],
-            "pros": [
-              "Deepest ML and LLM SDK support",
-              "Most agent frameworks launch here first",
-              "Strong data and eval tooling"
-            ],
-            "cons": [
-              "Dynamic typing needs discipline (mypy/pydantic)",
-              "Packaging and version management can be messy",
-              "Weaker frontend/full-stack sharing"
-            ]
-          },
-          {
-            "name": "TypeScript",
-            "emoji": "📘",
-            "tagline": "Type-safe agents that share code with your web stack",
-            "metrics": [
-              {
-                "label": "AI libraries",
-                "value": "Growing"
-              },
-              {
-                "label": "Typing",
-                "value": "Static"
-              },
-              {
-                "label": "Async model",
-                "value": "Event loop"
-              }
-            ],
-            "pros": [
-              "Compile-time type checks catch tool-schema errors",
-              "Shares types and code with frontend and APIs",
-              "Solid runtime for I/O-heavy agent workloads"
-            ],
-            "cons": [
-              "Fewer ML-specific libraries and examples",
-              "Some provider SDKs lag behind Python",
-              "Smaller pool of AI-focused engineers"
-            ]
+            "cons": ["Fewer niche research libraries", "Some ML tooling needs a Python sidecar"]
           }
         ],
         "criteria": [
@@ -304,34 +193,130 @@
             "label": "Type safety",
             "defaultWeight": 5,
             "scoreA": 5,
-            "scoreB": 9,
-            "rationale": "TypeScript's static types catch agent tool and schema bugs early."
+            "scoreB": 9
           },
           {
             "label": "Ecosystem",
             "defaultWeight": 4,
-            "scoreA": 9,
-            "scoreB": 6,
-            "rationale": "Python has more mature AI libraries, tooling, and examples."
+            "scoreA": 10,
+            "scoreB": 6
           },
           {
-            "label": "Maintainability",
-            "defaultWeight": 4,
-            "scoreA": 6,
-            "scoreB": 8,
-            "rationale": "Typed codebases are easier to refactor safely as agents grow."
+            "label": "Async handling",
+            "defaultWeight": 3,
+            "scoreA": 7,
+            "scoreB": 9
           },
           {
-            "label": "Deployment",
+            "label": "Deploy simplicity",
             "defaultWeight": 3,
             "scoreA": 6,
-            "scoreB": 8,
-            "rationale": "Node services and serverless fit well with typical web infrastructure."
+            "scoreB": 8
           }
         ],
         "verdict": {
-          "summary": "For reliability at scale, TypeScript's static typing and maintainability give it the edge, especially if your agents sit inside a web stack. Choose Python instead if you depend on niche ML libraries or need the newest agent frameworks first.",
-          "confidence": "medium"
+          "ifA": {
+            "line": "Python wins on ecosystem, so it's the pick when you need every library on day one.",
+            "plotTwist": "TypeScript wins if your agent is mostly tool calls and you want type errors caught before deploy."
+          },
+          "ifB": {
+            "line": "TypeScript wins for production: strict types and native async keep tool calls from going rogue.",
+            "plotTwist": "Python wins if you need niche ML libraries or research tooling more than compile-time safety."
+          }
+        }
+      }
+    },
+    {
+      "goalId": "ml-ecosystem",
+      "comparison": {
+        "isRelevant": true,
+        "fallbackReason": null,
+        "scene": "Your model finally works. Now it needs a notebook, a dataset, and a GPU.",
+        "goal": "Tap ML tooling",
+        "options": [
+          {
+            "name": "Python",
+            "emoji": "🐍",
+            "nickname": "The Lab Coat With Every Library Ever",
+            "stats": [
+              {
+                "label": "ML packages",
+                "value": "Huge",
+                "quip": "if it's published, it's here first"
+              },
+              {
+                "label": "Agent SDKs",
+                "value": "~Most",
+                "quip": "every new SDK ships Python first"
+              }
+            ],
+            "pros": [
+              "First-class support for every model SDK",
+              "Dominant for data, eval, and fine-tuning"
+            ],
+            "cons": [
+              "Typing is optional and often skipped",
+              "Deployment to web stacks takes extra glue"
+            ]
+          },
+          {
+            "name": "TypeScript",
+            "emoji": "📘",
+            "nickname": "The Web Dev Who Brought Good Manners",
+            "stats": [
+              {
+                "label": "ML packages",
+                "value": "Solid",
+                "quip": "enough for most agent work"
+              },
+              {
+                "label": "Type checking",
+                "value": "Strict",
+                "quip": "your agent's bugs get caught at compile time"
+              }
+            ],
+            "pros": [
+              "Native fit for web apps and edge runtimes",
+              "Strong static types catch errors early"
+            ],
+            "cons": ["Fewer ML and research libraries", "Data and eval tooling lags behind Python"]
+          }
+        ],
+        "criteria": [
+          {
+            "label": "ML libraries",
+            "defaultWeight": 5,
+            "scoreA": 10,
+            "scoreB": 5
+          },
+          {
+            "label": "Agent frameworks",
+            "defaultWeight": 4,
+            "scoreA": 9,
+            "scoreB": 7
+          },
+          {
+            "label": "Type safety",
+            "defaultWeight": 2,
+            "scoreA": 5,
+            "scoreB": 9
+          },
+          {
+            "label": "Web integration",
+            "defaultWeight": 3,
+            "scoreA": 6,
+            "scoreB": 9
+          }
+        ],
+        "verdict": {
+          "ifA": {
+            "line": "Python wins the ML tooling round by a mile.",
+            "plotTwist": "TypeScript wins if your agent lives inside a web app with no training."
+          },
+          "ifB": {
+            "line": "TypeScript takes it when your agent is mostly web glue.",
+            "plotTwist": "Python wins the moment you need fine-tuning, evals, or a research library."
+          }
         }
       }
     }

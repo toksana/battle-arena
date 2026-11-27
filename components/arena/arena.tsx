@@ -26,7 +26,8 @@ export const Arena = () => {
     retry,
   } = useArenaChat();
 
-  const handlePreset = (preset: Preset) => setPrompt(preset.prompt);
+  /** One click starts the battle; whatever the user typed stays in the composer. */
+  const handlePreset = (preset: Preset) => startBattle(preset.prompt);
 
   const handleSubmit = () => {
     startBattle(prompt);
@@ -46,15 +47,11 @@ export const Arena = () => {
         <PresetChips presets={PRESETS} onSelect={handlePreset} disabled={isBusy} />
       </section>
       <section aria-label="Battle canvas" className="flex flex-1 flex-col gap-4">
-        {messages.length === 0 ? (
-          <div className="grid flex-1 place-items-center rounded-xl border border-dashed border-border bg-card/40 p-8 text-center text-muted-foreground">
-            <p className="font-mono text-xs">awaiting_dilemma…</p>
-          </div>
-        ) : (
+        {messages.length > 0 && (
           <BattleView
             messages={messages}
             onAnswer={answerClarification}
-            onPickPrompt={setPrompt}
+            onPickPrompt={startBattle}
             isBusy={isBusy}
           />
         )}

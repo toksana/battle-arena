@@ -5,21 +5,21 @@
     "goals": [
       {
         "id": "best-quality",
-        "label": "Best output quality",
+        "label": "Best answers",
         "emoji": "🧠",
-        "hint": "Reasoning, accuracy, and nuanced writing matter most"
+        "hint": "Reasoning depth and output quality win"
       },
       {
-        "id": "fastest-responses",
-        "label": "Fastest responses",
+        "id": "fastest-replies",
+        "label": "Fastest replies",
         "emoji": "⚡",
-        "hint": "Low latency and snappy user experience come first"
+        "hint": "Lowest latency for snappy user experience"
       },
       {
         "id": "lowest-cost",
-        "label": "Lowest cost at scale",
-        "emoji": "💰",
-        "hint": "Token pricing and high-volume economics drive the choice"
+        "label": "Cheapest at scale",
+        "emoji": "💸",
+        "hint": "Lowest per-token cost for high volume"
       }
     ]
   },
@@ -29,199 +29,187 @@
       "comparison": {
         "isRelevant": true,
         "fallbackReason": null,
-        "title": "Claude vs. Groq",
-        "goal": "Best output quality",
+        "scene": "Your user typed a question. The clock is ticking. The answer is wrong.",
+        "goal": "Best answers",
         "options": [
           {
             "name": "Claude",
             "emoji": "🧠",
-            "tagline": "Anthropic's model family built for careful reasoning and writing",
-            "metrics": [
+            "nickname": "The Careful Reasoner Who Reads the Whole Prompt",
+            "stats": [
               {
-                "label": "Strength",
-                "value": "Reasoning"
+                "label": "Reasoning depth",
+                "value": "Very high",
+                "quip": "reads the fine print for you"
               },
               {
                 "label": "Latency",
-                "value": "~1-3 s TTFT"
+                "value": "~1-3 s",
+                "quip": "time to think, politely"
               },
               {
-                "label": "Context",
-                "value": "~200K tokens"
+                "label": "Context window",
+                "value": "~200K tokens",
+                "quip": "remembers the whole novel"
               }
             ],
             "pros": [
-              "Strong at nuanced writing and complex instructions",
-              "Reliable long-context analysis",
-              "Good safety and refusal calibration"
+              "Strongest nuanced writing and reasoning",
+              "Long context handles big documents"
             ],
-            "cons": [
-              "Slower time-to-first-token than Groq",
-              "Higher per-token price at top tiers",
-              "Fewer hardware-level speed options"
-            ]
+            "cons": ["Slower time to first token", "Pricier per million tokens"]
           },
           {
             "name": "Groq",
             "emoji": "⚡",
-            "tagline": "Fast inference platform serving open-weight models on custom LPU hardware",
-            "metrics": [
+            "nickname": "The Espresso Shot Dressed as an API",
+            "stats": [
               {
-                "label": "Strength",
-                "value": "Speed"
+                "label": "Throughput",
+                "value": "Very high",
+                "quip": "answers before you finish typing"
               },
               {
                 "label": "Latency",
-                "value": "~100-300 ms TTFT"
+                "value": "~0.2-0.5 s",
+                "quip": "blink and it's done"
               },
               {
-                "label": "Models",
-                "value": "Open-weight"
+                "label": "Model range",
+                "value": "Open models",
+                "quip": "Llama-class, not Claude-class"
               }
             ],
             "pros": [
-              "Extremely fast token generation",
-              "Low cost for supported open models",
-              "Good fit for real-time or streaming UX"
+              "Blazing fast inference for open models",
+              "Cheap-feeling responsiveness for chat UIs"
             ],
-            "cons": [
-              "Output quality bounded by the hosted open models",
-              "Model choice is limited to what Groq hosts",
-              "Less depth on complex reasoning than frontier models"
-            ]
+            "cons": ["Answers less polished on hard tasks", "Locked to open-weight models only"]
           }
         ],
         "criteria": [
           {
-            "label": "Output quality",
+            "label": "Answer quality",
             "defaultWeight": 5,
             "scoreA": 9,
-            "scoreB": 6,
-            "rationale": "Frontier Claude models lead on nuanced reasoning and writing"
-          },
-          {
-            "label": "Reasoning depth",
-            "defaultWeight": 4,
-            "scoreA": 9,
-            "scoreB": 6,
-            "rationale": "Claude handles multi-step complex tasks more reliably"
+            "scoreB": 6
           },
           {
             "label": "Speed",
-            "defaultWeight": 2,
-            "scoreA": 5,
-            "scoreB": 10,
-            "rationale": "Groq's LPU inference is far faster for token output"
-          },
-          {
-            "label": "Cost efficiency",
-            "defaultWeight": 2,
-            "scoreA": 5,
-            "scoreB": 8,
-            "rationale": "Groq's open-model pricing is typically lower per token"
-          }
-        ],
-        "verdict": {
-          "summary": "For best output quality, Claude is the stronger choice, especially for complex reasoning and writing. Choose Groq only if speed matters more than top-tier answers and open-weight models are good enough.",
-          "confidence": "medium"
-        }
-      }
-    },
-    {
-      "goalId": "fastest-responses",
-      "comparison": {
-        "isRelevant": true,
-        "fallbackReason": null,
-        "title": "Claude vs. Groq",
-        "goal": "Fastest responses",
-        "options": [
-          {
-            "name": "Claude",
-            "emoji": "🤖",
-            "tagline": "Strong reasoning and writing via Anthropic's API",
-            "metrics": [
-              {
-                "label": "Speed",
-                "value": "~50-80 tok/s"
-              },
-              {
-                "label": "Time to first token",
-                "value": "~0.5-1.5 s"
-              },
-              {
-                "label": "Model range",
-                "value": "Haiku to Opus"
-              }
-            ],
-            "pros": [
-              "Excellent quality and instruction following",
-              "Haiku tier is fast and affordable",
-              "Large context windows"
-            ],
-            "cons": [
-              "Slower than specialized inference hardware",
-              "Latency rises with larger models"
-            ]
-          },
-          {
-            "name": "Groq",
-            "emoji": "🚀",
-            "tagline": "Ultra-fast inference on custom LPU hardware",
-            "metrics": [
-              {
-                "label": "Speed",
-                "value": "~300-600 tok/s"
-              },
-              {
-                "label": "Time to first token",
-                "value": "~0.1-0.3 s"
-              },
-              {
-                "label": "Model range",
-                "value": "Open-weight models"
-              }
-            ],
-            "pros": [
-              "Among the lowest latency available",
-              "Great for real-time and streaming UX",
-              "Strong throughput for batch jobs"
-            ],
-            "cons": ["Runs open-weight models, not Claude", "Model quality varies by task"]
-          }
-        ],
-        "criteria": [
-          {
-            "label": "Raw speed",
-            "defaultWeight": 5,
-            "scoreA": 5,
-            "scoreB": 10,
-            "rationale": "Groq's LPU hardware generates tokens far faster"
-          },
-          {
-            "label": "First-token latency",
-            "defaultWeight": 5,
-            "scoreA": 5,
-            "scoreB": 9,
-            "rationale": "Groq responds almost immediately; Claude takes longer to start"
-          },
-          {
-            "label": "Output quality",
             "defaultWeight": 3,
-            "scoreA": 9,
-            "scoreB": 6,
-            "rationale": "Claude leads on reasoning and nuance; open models trail on hard tasks"
+            "scoreA": 5,
+            "scoreB": 10
+          },
+          {
+            "label": "Cost per token",
+            "defaultWeight": 3,
+            "scoreA": 5,
+            "scoreB": 8
           },
           {
             "label": "Model choice",
             "defaultWeight": 2,
-            "scoreA": 7,
-            "scoreB": 6,
-            "rationale": "Claude offers tiers within one family; Groq hosts many open models"
+            "scoreA": 6,
+            "scoreB": 7
           }
         ],
         "verdict": {
-          "summary": "For fastest responses, Groq is the clear winner, especially for real-time streaming. Choose Claude (Haiku tier) only if you need better quality at acceptable speed.",
-          "confidence": "high"
+          "ifA": {
+            "line": "Claude wins on answer quality. Hard tasks deserve the careful one.",
+            "plotTwist": "Groq wins if speed is what your users actually feel most."
+          },
+          "ifB": {
+            "line": "Groq wins on speed and cost. Fast and good enough beats slow and brilliant.",
+            "plotTwist": "Claude wins for hard reasoning, long documents, or polished writing."
+          }
+        }
+      }
+    },
+    {
+      "goalId": "fastest-replies",
+      "comparison": {
+        "isRelevant": true,
+        "fallbackReason": null,
+        "scene": "Your user hits enter. The spinner has opinions.",
+        "goal": "Fastest replies",
+        "options": [
+          {
+            "name": "Claude",
+            "emoji": "🧐",
+            "nickname": "The Careful Essayist",
+            "stats": [
+              {
+                "label": "Latency",
+                "value": "~1-3 s",
+                "quip": "time to think before typing"
+              },
+              {
+                "label": "Context",
+                "value": "~200K tokens",
+                "quip": "reads your whole codebase, then asks why"
+              }
+            ],
+            "pros": ["Sharper reasoning on messy prompts", "Strong at long-document work"],
+            "cons": ["Noticeably slower first token", "Pricier per million tokens"]
+          },
+          {
+            "name": "Groq",
+            "emoji": "🏎️",
+            "nickname": "The Espresso Shot with Legs",
+            "stats": [
+              {
+                "label": "Latency",
+                "value": "~0.2-0.5 s",
+                "quip": "answers before you finish the thought"
+              },
+              {
+                "label": "Throughput",
+                "value": "~500+ tok/s",
+                "quip": "your users blink and it's done"
+              }
+            ],
+            "pros": ["Replies feel instant in chat UIs", "Lower cost per token on open models"],
+            "cons": [
+              "Runs open-weight models, less top-end reasoning",
+              "Smaller model lineup to pick from"
+            ]
+          }
+        ],
+        "criteria": [
+          {
+            "label": "Speed",
+            "defaultWeight": 5,
+            "scoreA": 5,
+            "scoreB": 10
+          },
+          {
+            "label": "Quality",
+            "defaultWeight": 4,
+            "scoreA": 9,
+            "scoreB": 6
+          },
+          {
+            "label": "Cost",
+            "defaultWeight": 3,
+            "scoreA": 5,
+            "scoreB": 8
+          },
+          {
+            "label": "Ecosystem",
+            "defaultWeight": 2,
+            "scoreA": 8,
+            "scoreB": 5
+          }
+        ],
+        "verdict": {
+          "ifA": {
+            "line": "Claude wins on quality, but it is not the speed pick.",
+            "plotTwist": "Groq wins if replies must feel instant or traffic spikes."
+          },
+          "ifB": {
+            "line": "Groq crowns itself the speed king for live chat.",
+            "plotTwist": "Claude wins if answer quality matters more than milliseconds."
+          }
         }
       }
     },
@@ -230,92 +218,90 @@
       "comparison": {
         "isRelevant": true,
         "fallbackReason": null,
-        "title": "Claude vs. Groq",
-        "goal": "Lowest cost at scale",
+        "scene": "Month-end invoice arrives. Your token bill has a pulse.",
+        "goal": "Cheapest at scale",
         "options": [
           {
             "name": "Claude",
-            "emoji": "🤖",
-            "tagline": "Premium model family from Anthropic with strong reasoning",
-            "metrics": [
+            "emoji": "🧶",
+            "nickname": "The Careful Accountant Who Writes Poetry",
+            "stats": [
               {
                 "label": "Price tier",
-                "value": "Premium"
+                "value": "Premium",
+                "quip": "priced like a senior engineer"
               },
               {
-                "label": "Latency",
-                "value": "~1-3 s"
+                "label": "Output speed",
+                "value": "~60 tok/s",
+                "quip": "thoughtful, not rushed"
               },
               {
                 "label": "Context",
-                "value": "Large"
+                "value": "~200K tokens",
+                "quip": "reads the whole novel first"
               }
             ],
-            "pros": [
-              "Strong reasoning and writing quality",
-              "Good instruction following and safety defaults",
-              "Model tiers let you trade cost for capability"
-            ],
-            "cons": [
-              "Higher per-token cost than open-model hosts",
-              "Costs grow quickly at high volume"
-            ]
+            "pros": ["Best-in-class reasoning and writing", "Strong at long, messy instructions"],
+            "cons": ["Costs more per million tokens", "Slower than hosted open models"]
           },
           {
             "name": "Groq",
-            "emoji": "⚡",
-            "tagline": "Fast inference hosting for open-weight models on LPU hardware",
-            "metrics": [
+            "emoji": "🏎️",
+            "nickname": "The Cheap Espresso Shot With No Brakes",
+            "stats": [
               {
                 "label": "Price tier",
-                "value": "Low"
+                "value": "Low",
+                "quip": "the budget line item that breathes"
               },
               {
-                "label": "Latency",
-                "value": "~0.2-1 s"
+                "label": "Output speed",
+                "value": "~300 tok/s",
+                "quip": "finishes before you blink"
               },
               {
                 "label": "Models",
-                "value": "Open-weight"
+                "value": "Open-weight",
+                "quip": "you pick the brain, they serve it"
               }
             ],
-            "pros": ["Typically much cheaper per token", "Very fast token throughput"],
-            "cons": ["Limited to open-weight models", "Output quality varies by model choice"]
+            "pros": ["Much cheaper per token at volume", "Extremely fast inference"],
+            "cons": [
+              "Smaller models, weaker on hard reasoning",
+              "Model choice limited to what they host"
+            ]
           }
         ],
         "criteria": [
           {
-            "label": "Cost per token",
+            "label": "Cost/token",
             "defaultWeight": 5,
             "scoreA": 4,
-            "scoreB": 9,
-            "rationale": "Groq hosts open models at lower per-token prices"
+            "scoreB": 9
           },
           {
-            "label": "Output quality",
+            "label": "Quality",
             "defaultWeight": 4,
             "scoreA": 9,
-            "scoreB": 6,
-            "rationale": "Claude leads on reasoning; open models trail on hard tasks"
+            "scoreB": 6
           },
           {
             "label": "Speed",
             "defaultWeight": 3,
             "scoreA": 6,
-            "scoreB": 9,
-            "rationale": "Groq's inference hardware delivers very low latency"
-          },
-          {
-            "label": "Scale economics",
-            "defaultWeight": 4,
-            "scoreA": 5,
-            "scoreB": 8,
-            "rationale": "Groq's pricing and throughput suit high request volumes"
+            "scoreB": 10
           }
         ],
         "verdict": {
-          "summary": "For lowest cost at scale, Groq usually wins on price and throughput, provided an open-weight model meets your quality bar. Choose Claude if output quality justifies a higher per-token spend.",
-          "confidence": "medium"
+          "ifA": {
+            "line": "Claude wins on quality per dollar when mistakes are expensive.",
+            "plotTwist": "Groq wins if your tasks are simple and volume is massive."
+          },
+          "ifB": {
+            "line": "Groq wins on cost at scale for high-volume, simpler tasks.",
+            "plotTwist": "Claude wins if one wrong answer costs more than the token savings."
+          }
         }
       }
     }

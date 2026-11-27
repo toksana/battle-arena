@@ -7,6 +7,7 @@ import { GOAL_COUNT, type Clarification } from '@/lib/ai/schemas';
 import { presentItems } from '@/lib/comparison-view';
 import { cn } from '@/lib/utils';
 
+import { PreRenderedBadge } from './pre-rendered-badge';
 import { Reveal } from './reveal';
 
 type Goal = Clarification['goals'][number];
@@ -16,6 +17,8 @@ interface ClarificationCardProps {
   onAnswer?: (answer: GoalAnswer) => void;
   /** True while a request is in flight: goals stay visible but cannot be picked. */
   disabled?: boolean;
+  /** The question doubles as the battle's title, so a replay's badge sits next to it. */
+  isPreRendered?: boolean;
 }
 
 interface GoalButtonProps {
@@ -52,7 +55,12 @@ const pendingSlots = (shown: number, isStreaming: boolean): number =>
   isStreaming ? Math.max(0, GOAL_COUNT - shown) : 0;
 
 /** Human-in-the-loop step: the user's pick becomes the tool output and resumes the battle. */
-export const ClarificationCard = ({ part, onAnswer, disabled = false }: ClarificationCardProps) => {
+export const ClarificationCard = ({
+  part,
+  onAnswer,
+  disabled = false,
+  isPreRendered = false,
+}: ClarificationCardProps) => {
   const input: DeepPartial<Clarification> | undefined = part.input;
   const goals = presentItems(input?.goals).filter((goal) => goal.label);
   const isStreaming = part.state === 'input-streaming';
@@ -66,11 +74,14 @@ export const ClarificationCard = ({ part, onAnswer, disabled = false }: Clarific
 
   return (
     <section aria-label="Choose a goal" aria-busy={isStreaming} className="flex flex-col gap-3">
-      {input?.question ? (
-        <h3 className="text-base font-semibold">{input.question}</h3>
-      ) : (
-        <Skeleton className="h-6 w-2/3" />
-      )}
+      <div className="flex flex-wrap items-center gap-2">
+        {input?.question ? (
+          <h2 className="text-base font-semibold break-words">{input.question}</h2>
+        ) : (
+          <Skeleton className="h-6 w-2/3" />
+        )}
+        {isPreRendered && <PreRenderedBadge />}
+      </div>
       <ul className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         {goals.map((goal, index) => (
           <Reveal as="li" key={goal.id ?? index}>

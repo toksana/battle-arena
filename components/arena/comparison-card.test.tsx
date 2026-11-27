@@ -5,12 +5,48 @@ import { describe, expect, it } from 'vitest';
 import { MAX_WEIGHT } from '@/lib/ai/schemas';
 import { makeComparison, makeCriterion } from '@/test/factories';
 
-import { ADJUST_WEIGHTS_LABEL, CONFIDENCE_LABEL, ComparisonCard } from './comparison-card';
+import {
+  ADJUST_WEIGHTS_LABEL,
+  ComparisonCard,
+  PLOT_TWIST_LABEL,
+  TIE_VERDICT,
+} from './comparison-card';
 import { LEADING_LABEL } from './option-card';
 import { RESET_WEIGHTS_LABEL } from './weight-sliders';
 
 describe('ComparisonCard', () => {
-  it('renders both options with their pros, cons and metrics', () => {
+  it('opens with the scene line and no title of its own', () => {
+    // Arrange
+    const comparison = makeComparison();
+
+    // Act
+    render(<ComparisonCard input={comparison} isStreaming={false} />);
+
+    // Assert
+    expect(screen.getByText(comparison.scene)).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 3, name: comparison.scene })).toBeNull();
+  });
+
+  it('renders each option with its nickname and every stat next to its quip', () => {
+    // Arrange
+    const comparison = makeComparison();
+
+    // Act
+    render(<ComparisonCard input={comparison} isStreaming={false} />);
+
+    // Assert
+    comparison.options.forEach((option) => {
+      const region = within(screen.getByRole('region', { name: option.name }));
+      expect(region.getByText(`“${option.nickname}”`)).toBeInTheDocument();
+      option.stats.forEach((stat) => {
+        const row = region.getByText(`(${stat.quip})`).closest('div');
+        expect(row).toHaveTextContent(stat.label);
+        expect(row).toHaveTextContent(stat.value);
+      });
+    });
+  });
+
+  it('renders both options with their pros and cons', () => {
     // Arrange
     const comparison = makeComparison();
     const [a, b] = comparison.options;
@@ -27,10 +63,9 @@ describe('ComparisonCard', () => {
     expect(
       within(optionA.getByRole('list', { name: 'Cons' })).getAllByRole('listitem'),
     ).toHaveLength(a.cons.length);
-    a.metrics.forEach((metric) => expect(optionA.getByText(metric.value)).toBeInTheDocument());
   });
 
-  it('renders one bar pair per criterion and the verdict with confidence', () => {
+  it('renders one bar pair per criterion', () => {
     // Arrange
     const comparison = makeComparison();
 
@@ -42,8 +77,6 @@ describe('ComparisonCard', () => {
     comparison.criteria.forEach((criterion) =>
       expect(criteria.getByText(criterion.label)).toBeInTheDocument(),
     );
-    expect(screen.getByText(comparison.verdict.summary)).toBeInTheDocument();
-    expect(screen.getByText(CONFIDENCE_LABEL[comparison.verdict.confidence])).toBeInTheDocument();
   });
 
   it('skips criteria whose scores have not streamed in yet', () => {
@@ -54,7 +87,7 @@ describe('ComparisonCard', () => {
     // Act
     render(
       <ComparisonCard
-        input={{ title: faker.lorem.words(2), criteria: [ready, pending] }}
+        input={{ scene: faker.lorem.words(2), criteria: [ready, pending] }}
         isStreaming
       />,
     );
@@ -93,7 +126,7 @@ describe('ComparisonCard', () => {
     // Assert
     expect(screen.getByText(comparison.fallbackReason)).toBeInTheDocument();
     expect(screen.queryByText(comparison.options[0].name)).toBeNull();
-    expect(screen.queryByText(comparison.verdict.summary)).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Verdict' })).toBeNull();
   });
 
   describe('scores and leader', () => {
@@ -126,6 +159,43 @@ describe('ComparisonCard', () => {
       expect(within(b).getByText('Score 42 of 100')).toBeInTheDocument();
     });
 
+    it("shows the leader's verdict with its plot twist, not the other outcome", () => {
+      // Arrange
+      const comparison = closeBattle();
+      const { ifA, ifB } = comparison.verdict;
+
+      // Act
+      render(<ComparisonCard input={comparison} isStreaming={false} />);
+
+      // Assert
+      const verdict = within(screen.getByRole('region', { name: 'Verdict' }));
+      expect(verdict.getByText(ifA.line)).toBeInTheDocument();
+      expect(verdict.getByText(ifA.plotTwist)).toHaveTextContent(
+        `${PLOT_TWIST_LABEL}: ${ifA.plotTwist}`,
+      );
+      expect(verdict.queryByText(ifB.line)).toBeNull();
+    });
+
+    it('switches the verdict when a weight change flips the leader', () => {
+      // Arrange
+      const comparison = closeBattle();
+      const { ifA, ifB } = comparison.verdict;
+      render(<ComparisonCard input={comparison} isStreaming={false} />);
+      fireEvent.click(screen.getByRole('button', { name: ADJUST_WEIGHTS_LABEL }));
+
+      // Act
+      fireEvent.keyDown(
+        screen.getByRole('slider', { name: `${comparison.criteria[1].label} weight` }),
+        { key: 'End' },
+      );
+
+      // Assert
+      const verdict = within(screen.getByRole('region', { name: 'Verdict' }));
+      expect(verdict.getByText(ifB.line)).toBeInTheDocument();
+      expect(verdict.getByText(ifB.plotTwist)).toBeInTheDocument();
+      expect(verdict.queryByText(ifA.line)).toBeNull();
+    });
+
     it('leaves both options neutral on a tie', () => {
       // Arrange
       const comparison = makeComparison({
@@ -142,6 +212,9 @@ describe('ComparisonCard', () => {
       expect(screen.queryByText(LEADING_LABEL)).toBeNull();
       expect(optionRegion(comparison, 0)).not.toHaveAttribute('data-leader');
       expect(optionRegion(comparison, 1)).not.toHaveAttribute('data-leader');
+      expect(screen.getByText(TIE_VERDICT)).toBeInTheDocument();
+      expect(screen.queryByText(comparison.verdict.ifA.line)).toBeNull();
+      expect(screen.queryByText(comparison.verdict.ifB.line)).toBeNull();
     });
 
     it('shows no scores or weight controls while streaming', () => {
@@ -155,6 +228,7 @@ describe('ComparisonCard', () => {
       expect(screen.queryByText(/^Score \d+ of 100$/)).toBeNull();
       expect(screen.queryByText(LEADING_LABEL)).toBeNull();
       expect(screen.queryByRole('button', { name: ADJUST_WEIGHTS_LABEL })).toBeNull();
+      expect(screen.queryByRole('region', { name: 'Verdict' })).toBeNull();
     });
 
     it('moves the lead when a weight changes and restores it on reset', () => {

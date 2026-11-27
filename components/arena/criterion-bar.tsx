@@ -32,6 +32,5 @@ export const CriterionBar = ({ criterion }: { criterion: ReadyCriterion }) => (
     <span className="font-medium">{criterion.label}</span>
     <ScoreBar side="A" score={criterion.scoreA} />
     <ScoreBar side="B" score={criterion.scoreB} />
-    {criterion.rationale && <p className="text-xs text-muted-foreground">{criterion.rationale}</p>}
   </div>
 );

@@ -2,15 +2,20 @@ import { faker } from '@faker-js/faker';
 import { z } from 'zod';
 import { describe, expect, it } from 'vitest';
 
-import { makeComparison, makeCriterion, makeOption } from '@/test/factories';
+import { makeComparison, makeCriterion, makeOption, makeStat } from '@/test/factories';
 
 import {
   ClarificationSchema,
   ComparisonSchema,
   FallbackChipsSchema,
+  MAX_CRITERIA,
   MAX_SCORE,
+  MAX_STATS,
   MAX_WEIGHT,
-  TITLE_LENGTH,
+  MIN_CRITERIA,
+  MIN_STATS,
+  PRO_CON_COUNT,
+  SCENE_LENGTH,
   hardLimit,
   softLimit,
 } from './schemas';
@@ -63,7 +68,7 @@ describe('ComparisonSchema', () => {
     expect(result.error).toBeInstanceOf(z.ZodError);
   });
 
-  it.each([2, 6])('rejects %i criteria (3–5 required)', (count) => {
+  it.each([MIN_CRITERIA - 1, MAX_CRITERIA + 1])('rejects %i criteria', (count) => {
     // Arrange
     const comparison = makeComparison({
       criteria: faker.helpers.multiple(() => makeCriterion(), { count }),
@@ -95,9 +100,44 @@ describe('ComparisonSchema', () => {
     expect(result.error).toBeInstanceOf(z.ZodError);
   });
 
-  it('accepts a title at the hard limit', () => {
+  it.each(['pros', 'cons'] as const)(`requires exactly ${PRO_CON_COUNT} %s per option`, (kind) => {
     // Arrange
-    const comparison = makeComparison({ title: faker.string.alpha(hardLimit(TITLE_LENGTH)) });
+    const withCount = (count: number) =>
+      makeComparison({
+        options: [
+          makeOption({ [kind]: faker.helpers.multiple(() => faker.lorem.word(), { count }) }),
+          makeOption(),
+        ],
+      });
+
+    // Act
+    const results = [PRO_CON_COUNT - 1, PRO_CON_COUNT, PRO_CON_COUNT + 1].map((count) =>
+      ComparisonSchema.safeParse(withCount(count)),
+    );
+
+    // Assert
+    expect(results.map((result) => result.success)).toEqual([false, true, false]);
+  });
+
+  it.each([MIN_STATS - 1, MAX_STATS + 1])('rejects %i stats', (count) => {
+    // Arrange
+    const comparison = makeComparison({
+      options: [
+        makeOption({ stats: faker.helpers.multiple(() => makeStat(), { count }) }),
+        makeOption(),
+      ],
+    });
+
+    // Act
+    const result = ComparisonSchema.safeParse(comparison);
+
+    // Assert
+    expect(result.error).toBeInstanceOf(z.ZodError);
+  });
+
+  it('accepts a scene at the hard limit', () => {
+    // Arrange
+    const comparison = makeComparison({ scene: faker.string.alpha(hardLimit(SCENE_LENGTH)) });
 
     // Act
     const result = ComparisonSchema.safeParse(comparison);
@@ -106,9 +146,9 @@ describe('ComparisonSchema', () => {
     expect(result.error).toBeUndefined();
   });
 
-  it('rejects a title above the length limit', () => {
+  it('rejects a scene above the length limit', () => {
     // Arrange
-    const comparison = makeComparison({ title: faker.string.alpha(hardLimit(TITLE_LENGTH) + 1) });
+    const comparison = makeComparison({ scene: faker.string.alpha(hardLimit(SCENE_LENGTH) + 1) });
 
     // Act
     const result = ComparisonSchema.safeParse(comparison);
@@ -165,7 +205,7 @@ describe('JSON Schema sent to the model', () => {
     UNSUPPORTED_KEYWORDS.forEach((keyword) => expect(keys).not.toContain(keyword));
   });
 
-  it('keeps streaming order: title before options, verdict last', () => {
+  it('keeps streaming order: scene before options, verdict last', () => {
     // Arrange
     const jsonSchema = z.toJSONSchema(ComparisonSchema) as { properties: object };
 
@@ -173,7 +213,7 @@ describe('JSON Schema sent to the model', () => {
     const order = Object.keys(jsonSchema.properties);
 
     // Assert
-    expect(order.indexOf('title')).toBeLessThan(order.indexOf('options'));
+    expect(order.indexOf('scene')).toBeLessThan(order.indexOf('options'));
     expect(order.at(-1)).toBe('verdict');
   });
 });
@@ -200,9 +240,9 @@ describe('length budget', () => {
     const OBSERVED_OVERSHOOT = 1.35;
 
     // Act
-    const overshoot = Math.ceil(softLimit(TITLE_LENGTH) * OBSERVED_OVERSHOOT);
+    const overshoot = Math.ceil(softLimit(SCENE_LENGTH) * OBSERVED_OVERSHOOT);
 
     // Assert
-    expect(overshoot).toBeLessThanOrEqual(hardLimit(TITLE_LENGTH));
+    expect(overshoot).toBeLessThanOrEqual(hardLimit(SCENE_LENGTH));
   });
 });

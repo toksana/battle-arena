@@ -2,9 +2,9 @@ import { faker } from '@faker-js/faker';
 import { describe, expect, it } from 'vitest';
 
 import { MAX_SCORE, MIN_SCORE } from '@/lib/ai/schemas';
-import { makeCriterion, makeScore } from '@/test/factories';
+import { makeCriterion, makeOutcome, makeScore } from '@/test/factories';
 
-import { isCriterionReady, presentItems, scorePercent } from './comparison-view';
+import { isCriterionReady, presentItems, scorePercent, verdictFor } from './comparison-view';
 
 describe('presentItems', () => {
   it('drops holes and keeps order', () => {
@@ -66,7 +66,7 @@ describe('scorePercent', () => {
 });
 
 describe('isCriterionReady', () => {
-  it('accepts a criterion with label, weight and both scores, even without rationale', () => {
+  it('accepts a criterion with label, weight and both scores', () => {
     // Arrange
     const { label, defaultWeight, scoreA, scoreB } = makeCriterion();
 
@@ -105,5 +105,40 @@ describe('isCriterionReady', () => {
 
     // Assert
     expect(ready).toBe(false);
+  });
+});
+
+describe('verdictFor', () => {
+  it.each([
+    ['a', 'ifA'],
+    ['b', 'ifB'],
+  ] as const)('picks the outcome for leader %s', (leader, key) => {
+    // Arrange
+    const verdict = { ifA: makeOutcome(), ifB: makeOutcome() };
+
+    // Act
+    const outcome = verdictFor(verdict, leader);
+
+    // Assert
+    expect(outcome).toBe(verdict[key]);
+  });
+
+  it('has no outcome on a tie', () => {
+    // Arrange
+    const verdict = { ifA: makeOutcome(), ifB: makeOutcome() };
+
+    // Act
+    const outcome = verdictFor(verdict, null);
+
+    // Assert
+    expect(outcome).toBeUndefined();
+  });
+
+  it('tolerates a verdict that has not streamed in yet', () => {
+    // Act
+    const outcomes = [verdictFor(undefined, 'a'), verdictFor({ ifA: makeOutcome() }, 'b')];
+
+    // Assert
+    expect(outcomes).toEqual([undefined, undefined]);
   });
 });

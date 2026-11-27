@@ -7,8 +7,8 @@ Describe a dilemma ("Coffee vs. Smoothie", "Claude vs. Groq for an AI product") 
 ## How it works
 
 1. **Clarify.** If the goal is unclear, the agent calls `askClarification` with three goals tailored to the two options. The user picks one (human in the loop).
-2. **Compare.** The agent calls `renderComparison` for that goal. The card fills in field by field while the JSON streams: options, metrics, pros and cons, scored criteria, then a verdict.
-3. **Re-weigh.** Criterion weights are sliders. Scores (0–100) and the leading option update instantly on the client, with no model call.
+2. **Compare.** The agent calls `renderComparison` for that goal. The card fills in field by field while the JSON streams: a one-line scene, each option's nickname, stats with a quip, two pros and two cons, scored criteria, then a verdict.
+3. **Re-weigh.** Criterion weights are sliders. Scores (0–100), the leading option and the verdict update instantly on the client, with no model call.
 4. **Guardrails.** Off-topic or harmful requests get `renderFallbackChips`: one neutral sentence and three safe dilemmas derived from the user's topic. Absurd or injected dilemmas get a comparison with `isRelevant: false` and a witty one-liner instead of invented facts.
 5. **Cooldown.** Past the rate limit, the arena offers the four presets as pre-rendered battles. They replay recorded model output client-side through the same components.
 
@@ -121,4 +121,6 @@ Input normalization (control characters removed, whitespace collapsed, links rep
 - **Auto-continue only after a clarification answer.** Display tools are acknowledged on the server, so a generic "all tool calls complete" rule re-sent the history and duplicated cards.
 - **Client-side replay.** Pre-rendered battles stream recorded tool calls through the same chunk protocol as live ones. They keep the demo usable under the rate limit and make the e2e tests deterministic without keys. Each recording is a lazily loaded ~6 KB chunk.
 - **One battle on screen.** Each new dilemma starts a fresh history. That keeps prompts small and the model unbiased by earlier battles. History and persistence were left out of the MVP.
-- **Domain-agnostic schema.** One `ComparisonSchema` (generic metrics, criteria and verdict) covers drinks, LLM providers, holidays and programming languages alike.
+- **Domain-agnostic schema.** One `ComparisonSchema` (generic stats, criteria and verdict) covers drinks, LLM providers, holidays and programming languages alike.
+- **Jokes in the labels, honest numbers.** The card is meant to read in a second as a screenshot. The model jokes in the scene, nicknames, stat quips, pros/cons and verdict, while stat values stay rough honest estimates with "~". The voice example in the prompt uses a topic outside the presets: with a Coffee vs. Smoothie example the model copied it word for word.
+- **A verdict per outcome.** The model writes `verdict.ifA` and `verdict.ifB`; the card shows the one for whoever leads under the current weights, and a fixed line on a tie. A single model-written verdict contradicted the score as soon as a slider flipped the lead.
