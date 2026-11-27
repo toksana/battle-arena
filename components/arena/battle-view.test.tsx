@@ -26,7 +26,7 @@ describe('BattleView', () => {
     // Assert
     expect(screen.getByRole('heading', { name: dilemma })).toBeInTheDocument();
     expect(screen.getByText(comparison.scene)).toBeInTheDocument();
-    expect(screen.getByText(comparison.verdict.summary)).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Verdict' })).toBeInTheDocument();
     expect(screen.getByRole('article', { name: 'Comparison' })).toHaveAttribute(
       'aria-busy',
       'false',

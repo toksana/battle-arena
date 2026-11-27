@@ -13,6 +13,7 @@ import {
   type Criterion,
   type Option,
   type Stat,
+  type VerdictOutcome,
 } from '@/lib/ai/schemas';
 
 const short = (max: number): string => faker.lorem.words(2).slice(0, max);
@@ -53,6 +54,11 @@ export const makeOption = (overrides: Partial<Option> = {}): Option => ({
   ...overrides,
 });
 
+export const makeOutcome = (): VerdictOutcome => ({
+  line: faker.lorem.sentence().slice(0, 120),
+  plotTwist: faker.lorem.sentence().slice(0, 120),
+});
+
 export const makeComparison = (overrides: Partial<Comparison> = {}): Comparison => ({
   isRelevant: true,
   fallbackReason: null,
@@ -65,6 +71,6 @@ export const makeComparison = (overrides: Partial<Comparison> = {}): Comparison 
   criteria: faker.helpers.multiple(() => makeCriterion(), {
     count: { min: MIN_CRITERIA, max: MAX_CRITERIA },
   }),
-  verdict: { summary: faker.lorem.sentence().slice(0, 240), confidence: 'medium' },
+  verdict: { ifA: makeOutcome(), ifB: makeOutcome() },
   ...overrides,
 });

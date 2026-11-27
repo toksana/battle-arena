@@ -7,8 +7,13 @@ import { useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCardWeights } from '@/hooks/use-card-weights';
-import type { Comparison } from '@/lib/ai/schemas';
-import { type ReadyCriterion, isCriterionReady, presentItems } from '@/lib/comparison-view';
+import type { Comparison, VerdictOutcome } from '@/lib/ai/schemas';
+import {
+  type ReadyCriterion,
+  isCriterionReady,
+  presentItems,
+  verdictFor,
+} from '@/lib/comparison-view';
 import { type Leader, type Scores, computeScores, pickLeader } from '@/lib/scoring';
 
 import { CriterionBar } from './criterion-bar';
@@ -18,12 +23,10 @@ import { Reveal } from './reveal';
 import { WeightSliders } from './weight-sliders';
 
 export const ADJUST_WEIGHTS_LABEL = 'Adjust weights';
+export const PLOT_TWIST_LABEL = 'Plot twist';
 
-export const CONFIDENCE_LABEL = {
-  low: 'Low confidence',
-  medium: 'Medium confidence',
-  high: 'High confidence',
-} as const;
+/** Shown on an exact tie: the model wrote no verdict for it, the user's weights decide. */
+export const TIE_VERDICT = 'Dead heat. Your weights, your call.';
 
 interface ComparisonCardProps {
   input: DeepPartial<Comparison> | undefined;
@@ -100,22 +103,56 @@ const Criteria = ({ input, isStreaming, ready }: CriteriaProps) => {
   );
 };
 
-const Verdict = ({ verdict }: { verdict: DeepPartial<Comparison>['verdict'] }) => {
-  if (!verdict?.summary) return null;
+/** The winner call, then the condition that flips it: useful, not just a punchline. */
+const OutcomeLines = ({ outcome }: { outcome: DeepPartial<VerdictOutcome> | undefined }) => {
+  if (!outcome?.line) {
+    return (
+      <p className="flex gap-2 font-medium">
+        <span aria-hidden>🤝</span>
+        {TIE_VERDICT}
+      </p>
+    );
+  }
   return (
-    <Reveal className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4">
-      <div className="flex items-center justify-between gap-2">
-        <h4 className="font-semibold">Verdict</h4>
-        {verdict.confidence && (
-          <span className="font-mono text-[0.7rem] text-muted-foreground">
-            {CONFIDENCE_LABEL[verdict.confidence]}
+    <>
+      <p className="flex gap-2 font-medium">
+        <span aria-hidden>🏆</span>
+        {outcome.line}
+      </p>
+      {outcome.plotTwist && (
+        <p className="flex gap-2 text-muted-foreground">
+          <span aria-hidden>🔀</span>
+          <span>
+            <span className="sr-only">{PLOT_TWIST_LABEL}: </span>
+            {outcome.plotTwist}
           </span>
-        )}
-      </div>
-      <p>{verdict.summary}</p>
-    </Reveal>
+        </p>
+      )}
+    </>
   );
 };
+
+interface VerdictProps {
+  verdict: DeepPartial<Comparison>['verdict'];
+  leader: Leader;
+}
+
+/**
+ * Follows the live leader: the winner call and its plot twist swap when a slider flips the
+ * lead. Keyed by leader so each swap fades in; announced politely to screen readers.
+ */
+const Verdict = ({ verdict, leader }: VerdictProps) => (
+  <section
+    aria-label="Verdict"
+    aria-live="polite"
+    className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4"
+  >
+    <h4 className="font-semibold">Verdict</h4>
+    <Reveal key={leader ?? 'tie'} className="flex flex-col gap-2">
+      <OutcomeLines outcome={verdictFor(verdict, leader)} />
+    </Reveal>
+  </section>
+);
 
 const FALLBACK_REASON = 'This battle cannot be fought.';
 
@@ -190,7 +227,7 @@ const Battle = ({ input, isStreaming }: ComparisonCardProps) => {
       <CardHeader input={input} isStreaming={isStreaming} />
       <OptionsGrid input={input} isStreaming={isStreaming} scores={scores} leader={leader} />
       <Criteria input={input} isStreaming={isStreaming} ready={ready} />
-      <Verdict verdict={input?.verdict} />
+      {scores && <Verdict verdict={input?.verdict} leader={leader} />}
       {scores && (
         <WeightsPanel
           ready={ready}

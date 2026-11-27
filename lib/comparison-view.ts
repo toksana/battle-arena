@@ -1,6 +1,7 @@
 import type { DeepPartial } from 'ai';
 
-import { MAX_SCORE, MIN_SCORE, type Criterion } from '@/lib/ai/schemas';
+import { MAX_SCORE, MIN_SCORE, type Criterion, type Verdict } from '@/lib/ai/schemas';
+import type { Leader } from '@/lib/scoring';
 
 /** Partial JSON can leave holes in arrays mid-stream; drop them so lists render cleanly. */
 export const presentItems = <T>(items: ReadonlyArray<T | undefined> | undefined): T[] =>
@@ -22,3 +23,13 @@ export const isCriterionReady = (
   typeof criterion.defaultWeight === 'number' &&
   typeof criterion.scoreA === 'number' &&
   typeof criterion.scoreB === 'number';
+
+/** The verdict for whoever leads under the current weights; a tie or no leader yet has none. */
+export const verdictFor = (
+  verdict: DeepPartial<Verdict> | undefined,
+  leader: Leader,
+): DeepPartial<Verdict['ifA']> | undefined => {
+  if (leader === 'a') return verdict?.ifA;
+  if (leader === 'b') return verdict?.ifB;
+  return undefined;
+};

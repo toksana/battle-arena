@@ -101,9 +101,27 @@ export const CriterionSchema = z.object({
   scoreB: score('B'),
 });
 
+const outcome = (winner: 'A' | 'B', loser: 'A' | 'B') =>
+  z
+    .object({
+      line: text(
+        120,
+        `One short winner call crowning option ${winner} for the goal, e.g. "Stairs win on points."`,
+      ),
+      plotTwist: text(
+        120,
+        `The concrete condition under which option ${loser} wins instead, e.g. "Elevator wins above floor 10 or with a laptop bag."`,
+      ),
+    })
+    .describe(`Shown while option ${winner} leads under the user's weights.`);
+
+/**
+ * One verdict per outcome: the user's weight sliders pick the leader on the client, and the
+ * card shows the matching outcome, so the text never contradicts the live score.
+ */
 export const VerdictSchema = z.object({
-  summary: text(240, 'Final recommendation tied to the goal, in at most two short sentences.'),
-  confidence: z.enum(['low', 'medium', 'high']),
+  ifA: outcome('A', 'B'),
+  ifB: outcome('B', 'A'),
 });
 
 /** Field order = streaming order: scene first, verdict last. */
@@ -169,6 +187,8 @@ export const FallbackChipsSchema = z.object({
 export type Stat = z.infer<typeof StatSchema>;
 export type Option = z.infer<typeof OptionSchema>;
 export type Criterion = z.infer<typeof CriterionSchema>;
+export type Verdict = z.infer<typeof VerdictSchema>;
+export type VerdictOutcome = Verdict['ifA'];
 export type Comparison = z.infer<typeof ComparisonSchema>;
 export type Clarification = z.infer<typeof ClarificationSchema>;
 export type ClarificationAnswer = z.infer<typeof ClarificationAnswerSchema>;
