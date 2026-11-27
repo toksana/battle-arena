@@ -33,7 +33,7 @@ interface ComparisonCardProps {
   isStreaming: boolean;
 }
 
-/** The dilemma above is the only title; the card opens with the model's cold-open scene. */
+/** The battle heading above (dilemma or clarification question) is the only title; the card opens with the model's cold-open scene. */
 const CardHeader = ({ input, isStreaming }: ComparisonCardProps) => (
   <header className="flex flex-wrap items-baseline justify-between gap-2">
     {input?.scene ? (

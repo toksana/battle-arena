@@ -15,6 +15,24 @@ const assistant = (parts: ArenaUIMessage['parts']): ArenaUIMessage => ({
   parts,
 });
 
+const askedClarification = (question: string): ArenaUIMessage =>
+  assistant([
+    {
+      type: 'tool-askClarification',
+      toolCallId: faker.string.uuid(),
+      state: 'input-available',
+      input: {
+        question,
+        goals: [{ id: faker.string.uuid(), label: 'Get energized', emoji: '⚡', hint: '' }],
+      },
+    },
+  ]);
+
+const replayed = (dilemma: string): ArenaUIMessage => ({
+  ...makeUserMessage(dilemma),
+  metadata: { replayPresetId: 'coffee-vs-smoothie' },
+});
+
 describe('BattleView', () => {
   it('shows the dilemma and the finished comparison', () => {
     // Arrange
@@ -158,10 +176,8 @@ describe('BattleView', () => {
 
   it('marks a replayed battle as pre-rendered', () => {
     // Arrange
-    const dilemma = { ...makeUserMessage(), metadata: { replayPresetId: 'coffee-vs-smoothie' } };
-
     // Act
-    render(<BattleView messages={[dilemma]} />);
+    render(<BattleView messages={[replayed(faker.lorem.words(4))]} />);
 
     // Assert
     expect(screen.getByText(PRE_RENDERED_LABEL)).toBeInTheDocument();
@@ -173,5 +189,34 @@ describe('BattleView', () => {
 
     // Assert
     expect(screen.queryByText(PRE_RENDERED_LABEL)).toBeNull();
+  });
+
+  it('titles the battle with the clarification question instead of the dilemma', () => {
+    // Arrange
+    const dilemma = faker.lorem.words(4);
+    const question = faker.lorem.sentence();
+
+    // Act
+    render(<BattleView messages={[makeUserMessage(dilemma), askedClarification(question)]} />);
+
+    // Assert
+    expect(screen.queryByRole('heading', { name: dilemma })).toBeNull();
+    expect(screen.getByRole('heading', { level: 2, name: question })).toBeInTheDocument();
+  });
+
+  it('keeps the pre-rendered badge next to the question once it replaces the dilemma', () => {
+    // Arrange
+    const question = faker.lorem.sentence();
+
+    // Act
+    render(
+      <BattleView messages={[replayed(faker.lorem.words(4)), askedClarification(question)]} />,
+    );
+
+    // Assert
+    expect(screen.getAllByText(PRE_RENDERED_LABEL)).toHaveLength(1);
+    expect(screen.getByRole('region', { name: 'Choose a goal' })).toHaveTextContent(
+      PRE_RENDERED_LABEL,
+    );
   });
 });

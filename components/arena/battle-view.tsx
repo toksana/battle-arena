@@ -14,7 +14,13 @@ interface BattleViewProps {
 const textOf = (message: ArenaUIMessage): string =>
   message.parts.flatMap((part) => (part.type === 'text' ? [part.text] : [])).join(' ');
 
-/** One battle: the user's dilemma as a heading, then every assistant part in order. */
+const asksClarification = (messages: readonly ArenaUIMessage[]): boolean =>
+  messages.some((message) => message.parts.some((part) => part.type === 'tool-askClarification'));
+
+/**
+ * One battle: the user's dilemma as a heading, then every assistant part in order.
+ * A clarification question already names both options, so it replaces the dilemma heading.
+ */
 export const BattleView = ({
   messages,
   onAnswer,
@@ -23,13 +29,15 @@ export const BattleView = ({
 }: BattleViewProps) => {
   const dilemma = messages.find((message) => message.role === 'user');
   const replies = messages.filter((message) => message.role === 'assistant');
+  const isPreRendered = dilemma?.metadata?.replayPresetId !== undefined;
+  const showsDilemma = dilemma !== undefined && !asksClarification(replies);
 
   return (
     <article aria-label="Current battle" className="flex flex-col gap-4">
-      {dilemma && (
+      {showsDilemma && (
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-base font-semibold break-words">{textOf(dilemma)}</h2>
-          {dilemma.metadata?.replayPresetId && <PreRenderedBadge />}
+          {isPreRendered && <PreRenderedBadge />}
         </div>
       )}
       {replies.flatMap((message) =>
@@ -40,6 +48,7 @@ export const BattleView = ({
             onAnswer={onAnswer}
             onPickPrompt={onPickPrompt}
             isBusy={isBusy}
+            isPreRendered={isPreRendered}
           />
         )),
       )}
