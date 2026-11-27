@@ -25,7 +25,7 @@ describe('BattleView', () => {
 
     // Assert
     expect(screen.getByRole('heading', { name: dilemma })).toBeInTheDocument();
-    expect(screen.getByText(comparison.title)).toBeInTheDocument();
+    expect(screen.getByText(comparison.scene)).toBeInTheDocument();
     expect(screen.getByText(comparison.verdict.summary)).toBeInTheDocument();
     expect(screen.getByRole('article', { name: 'Comparison' })).toHaveAttribute(
       'aria-busy',
@@ -35,13 +35,13 @@ describe('BattleView', () => {
 
   it('renders a partially streamed comparison as busy', () => {
     // Arrange
-    const title = faker.lorem.words(3);
+    const scene = faker.lorem.words(3);
     const streaming = assistant([
       {
         type: 'tool-renderComparison',
         toolCallId: faker.string.uuid(),
         state: 'input-streaming',
-        input: { title, options: [{ name: faker.lorem.word() }] },
+        input: { scene, options: [{ name: faker.lorem.word() }] },
       },
     ]);
 
@@ -49,7 +49,7 @@ describe('BattleView', () => {
     render(<BattleView messages={[makeUserMessage(), streaming]} />);
 
     // Assert
-    expect(screen.getByText(title)).toBeInTheDocument();
+    expect(screen.getByText(scene)).toBeInTheDocument();
     expect(screen.getByRole('article', { name: 'Comparison' })).toHaveAttribute(
       'aria-busy',
       'true',
@@ -75,7 +75,7 @@ describe('BattleView', () => {
 
     // Assert
     expect(screen.queryByRole('article', { name: 'Comparison' })).toBeNull();
-    expect(screen.queryByText(comparison.title)).toBeNull();
+    expect(screen.queryByText(comparison.scene)).toBeNull();
     expect(screen.queryByText(errorText)).toBeNull();
   });
 

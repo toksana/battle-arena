@@ -10,6 +10,18 @@ import { LEADING_LABEL } from './option-card';
 import { RESET_WEIGHTS_LABEL } from './weight-sliders';
 
 describe('ComparisonCard', () => {
+  it('opens with the scene line and no title of its own', () => {
+    // Arrange
+    const comparison = makeComparison();
+
+    // Act
+    render(<ComparisonCard input={comparison} isStreaming={false} />);
+
+    // Assert
+    expect(screen.getByText(comparison.scene)).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 3, name: comparison.scene })).toBeNull();
+  });
+
   it('renders both options with their pros, cons and metrics', () => {
     // Arrange
     const comparison = makeComparison();
@@ -54,7 +66,7 @@ describe('ComparisonCard', () => {
     // Act
     render(
       <ComparisonCard
-        input={{ title: faker.lorem.words(2), criteria: [ready, pending] }}
+        input={{ scene: faker.lorem.words(2), criteria: [ready, pending] }}
         isStreaming
       />,
     );

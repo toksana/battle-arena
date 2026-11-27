@@ -40,7 +40,7 @@ export const makeOption = (overrides: Partial<Option> = {}): Option => ({
 export const makeComparison = (overrides: Partial<Comparison> = {}): Comparison => ({
   isRelevant: true,
   fallbackReason: null,
-  title: 'Coffee vs. Smoothie',
+  scene: faker.lorem.sentence().slice(0, 100),
   goal: short(40),
   // Distinct names: tests look options up by name, and the product list is short.
   options: faker.helpers

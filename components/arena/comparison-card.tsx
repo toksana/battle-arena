@@ -30,12 +30,13 @@ interface ComparisonCardProps {
   isStreaming: boolean;
 }
 
+/** The dilemma above is the only title; the card opens with the model's cold-open scene. */
 const CardHeader = ({ input, isStreaming }: ComparisonCardProps) => (
   <header className="flex flex-wrap items-baseline justify-between gap-2">
-    {input?.title ? (
-      <h3 className="text-lg font-semibold tracking-tight">{input.title}</h3>
+    {input?.scene ? (
+      <p className="text-base font-medium text-pretty italic">{input.scene}</p>
     ) : (
-      isStreaming && <Skeleton className="h-7 w-1/2" />
+      isStreaming && <Skeleton className="h-6 w-2/3" />
     )}
     {input?.goal && (
       <span className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
